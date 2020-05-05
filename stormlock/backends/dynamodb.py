@@ -1,4 +1,3 @@
-from configparser import SectionProxy
 from datetime import datetime, timedelta
 import secrets
 from time import time
