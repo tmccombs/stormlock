@@ -54,4 +54,7 @@ def create_lock_table(
                 'AttributeName': 'expires',
                 })
 
-# TODO: add a main method that parses CLI flags
+
+if __name__ == '__main__':
+    # TODO: parse CLI flags
+    create_lock_table()
