@@ -16,8 +16,15 @@ def create_lock_table(
         tags: dict = {},
         region: Optional[str] = None,
         profile: Optional[str] = None,
+        aws_access_key_id: Optional[str] = None,
+        aws_secret_access_key: Optional[str] = None,
         ):
-    session = boto3.session.Session(region_name=region, profile_name=profile)
+    session = boto3.session.Session(
+            region_name=region,
+            profile_name=profile,
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key,
+            )
     client = session.client('dynamodb', endpoint_url=endpoint)
 
     config_args = {}
@@ -53,6 +60,14 @@ def create_lock_table(
                 'Enabled': True,
                 'AttributeName': 'expires',
                 })
+
+
+def test_setup():
+    create_lock_table(
+            aws_access_key_id='test',
+            aws_secret_access_key='test',
+            endpoint='http://localhost:8000',
+            region='us-east-1')
 
 
 if __name__ == '__main__':
