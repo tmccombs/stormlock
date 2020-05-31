@@ -4,28 +4,20 @@ from time import sleep
 import os
 import sys
 
-DAY=timedelta(days=1)
+from stormlock import load_lock, LockHeldException, LockExpiredException
 
-from stormlock import (
-        backend_for_config, get_backend,
-        LockHeldException, LockExpiredException)
-
-backend_name = sys.argv[1]
+resource_name = sys.argv[1]
 
 base_dir = os.path.dirname(__file__)
 
-config_file = f"{base_dir}/../example_config/{backend_name}.cfg"
+config_file = f"{base_dir}/stormlock.cfg"
 
-cfg = ConfigParser()
-if cfg.read(config_file):
-    backend = backend_for_config(cfg)
-else:
-    backend = get_backend(backend_name)
+lock = load_lock(f'{resource_name}_test', config_file)
 
 
-def fail_lock(resource):
+def fail_lock():
     try:
-        backend.lock(resource, 'me too', timedelta(days=1))
+        lock.acquire()
         assert False, "successfully got contested lock"
     except LockHeldException as e:
         print(f"Lock for {e.resource} already held by "
@@ -33,38 +25,38 @@ def fail_lock(resource):
 
 
 # first clear the lock if it was left over from a previous run
-current = backend.current('test1')
+current = lock.current()
 if current:
-    backend.unlock('test1', current.id)
+    lock.release(current.id)
 
-id1 = backend.lock('test1', 'me', DAY)
+id1 = lock.acquire()
 print(f"Locked test1 with {id1}")
 
-assert backend.is_current('test1', id1)
+assert lock.is_current(id1)
 
-current = backend.current('test1')
+current = lock.current()
 print("current=", current)
 assert current.id == id1, "ids don't match"
 
-fail_lock('test1')
+fail_lock()
 
-backend.renew('test1', id1, DAY)
+lock.renew(id1)
 
-backend.unlock('test1', id1)
+lock.release(id1)
 
-id2 = backend.lock('test1', 'me2', timedelta(seconds=4))
+id2 = lock.acquire(timedelta(seconds=4))
 print(f"Reacquired lock with id {id2}")
 sleep(2)
-backend.renew('test1', id2, timedelta(seconds=4))
+lock.renew(id2, timedelta(seconds=4))
 
-fail_lock('test1')
+fail_lock()
 
 sleep(4)
 
 try:
-    backend.renew('test1', id2, timedelta(seconds=4))
+    lock.renew(id2, timedelta(seconds=4))
     assert False, "successfully renewed expired lease"
 except LockExpiredException:
     print("Lock was successfully expired")
 
-assert not backend.is_current('test1', id2)
+assert not lock.is_current(id2)
