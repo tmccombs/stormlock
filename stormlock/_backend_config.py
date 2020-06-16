@@ -1,7 +1,5 @@
 from configparser import ConfigParser
 from inspect import signature, Signature, Parameter
-import os
-import typing
 from typing import Optional
 
 from .backend import find_backend

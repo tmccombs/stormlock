@@ -10,20 +10,14 @@ from ._backend_config import backend_for_config
 
 
 class StormLock:
-    def __init__(
-            self,
-            backend: Backend,
-            resource: str,
-            principal: str,
-            ttl: timedelta):
+    def __init__(self, backend: Backend, resource: str, principal: str, ttl: timedelta):
         self._backend = backend
         self._resource = resource
         self._principal = principal
         self._ttl = ttl
 
     def acquire(self, ttl: Optional[timedelta] = None) -> str:
-        return self._backend.lock(
-                self._resource, self._principal, ttl or self._ttl)
+        return self._backend.lock(self._resource, self._principal, ttl or self._ttl)
 
     def release(self, lease_id: str):
         self._backend.unlock(self._resource, lease_id)
@@ -39,17 +33,14 @@ class StormLock:
 
 
 _SEARCH_PATHS = [
-        "./.stormlock.cfg",
-        os.path.join(
-            os.environ.get('XDG_CONFIG_HOME', '~/.config'),
-            'stormlock.cfg'
-            ),
-        "~/.stormlock.cfg",
-        ]
+    "./.stormlock.cfg",
+    os.path.join(os.environ.get("XDG_CONFIG_HOME", "~/.config"), "stormlock.cfg"),
+    "~/.stormlock.cfg",
+]
 
 
 def parse_ttl(ttl_str: str) -> timedelta:
-    (val, unit) = ttl_str.split(' ')
+    (val, unit) = ttl_str.split(" ")
     kwargs = {unit: int(val)}
     return timedelta(**kwargs)
 
@@ -61,10 +52,10 @@ def _find_conf_file() -> str:
     raise Exception("Unable to find stormlock configuration file")
 
 
-def _get_cfg_value(
-        cfg: ConfigParser, section: str, name: str) -> Optional[str]:
-    return (cfg.get(section, name, fallback=None)
-            or cfg.get('default', name, fallback=None))
+def _get_cfg_value(cfg: ConfigParser, section: str, name: str) -> Optional[str]:
+    return cfg.get(section, name, fallback=None) or cfg.get(
+        "default", name, fallback=None
+    )
 
 
 def load_lock(resource: str, conf_file: Optional[str]) -> StormLock:
@@ -72,11 +63,11 @@ def load_lock(resource: str, conf_file: Optional[str]) -> StormLock:
         conf_file = _find_conf_file()
     cfg = ConfigParser()
     cfg.read(conf_file)
-    principal = _get_cfg_value(cfg, resource, 'principal')
-    backend_type = _get_cfg_value(cfg, resource, 'backend')
-    ttl = parse_ttl(_get_cfg_value(cfg, resource, 'ttl'))
+    principal = _get_cfg_value(cfg, resource, "principal")
+    backend_type = _get_cfg_value(cfg, resource, "backend")
+    ttl = parse_ttl(_get_cfg_value(cfg, resource, "ttl"))
     if not principal:
-        principal = '@'.join([getuser(), gethostname()])
+        principal = "@".join([getuser(), gethostname()])
 
     backend = backend_for_config(backend_type, cfg)
     return StormLock(backend, resource, principal, ttl)

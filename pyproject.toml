@@ -26,6 +26,9 @@ postgresql = ["psycopg2"]
 "dynamodb" = "stormlock.backends.dynamodb:DynamoDB [dynamodb]"
 "postgresql" = "stormlock.backends.postgresql:Postgresql [postgresql]"
 
+[tool.poetry.scripts]
+stormlock = "stormlock.cli:run"
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
