@@ -10,7 +10,7 @@ def _read_parameter(param: Parameter, cfg: ConfigParser, section: str):
     annot = param.annotation
 
     if annot == dict or annot == Optional[dict]:
-        section_name = '{}.{}'.format(section, param.name)
+        section_name = "{}.{}".format(section, param.name)
         if section_name in cfg:
             return dict(cfg[section_name])
         else:
@@ -27,8 +27,7 @@ def _read_parameter(param: Parameter, cfg: ConfigParser, section: str):
         return param.default
 
 
-def _config_for_signature(
-        cfg: ConfigParser, section: str, sig: Signature) -> dict:
+def _config_for_signature(cfg: ConfigParser, section: str, sig: Signature) -> dict:
     kwargs = {}
     if section not in cfg:
         return kwargs
@@ -48,8 +47,8 @@ def _config_for_signature(
 
 
 def backend_for_config(backend_type: str, cfg: ConfigParser):
-    '''Load a backend from configuration'''
+    """Load a backend from configuration"""
     Backend = find_backend(backend_type)
-    section = 'backend.' + backend_type
+    section = "backend." + backend_type
     kwargs = _config_for_signature(cfg, section, signature(Backend))
     return Backend(**kwargs)

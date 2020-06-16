@@ -4,21 +4,16 @@ from uuid import uuid4
 
 import psycopg2
 
-from stormlock.backend import (
-        Backend, Lease, LockHeldException, LockExpiredException)
+from stormlock.backend import Backend, Lease, LockHeldException, LockExpiredException
 
 
 class Postgresql(Backend):
-    def __init__(self, connection: str, table: str = 'stormlock'):
+    def __init__(self, connection: str, table: str = "stormlock"):
         self._conn = psycopg2.connect(connection)
         self._conn.autocommit = True
         self._table = table
 
-    def lock(
-            self,
-            resource: str,
-            principal: str,
-            ttl: timedelta):
+    def lock(self, resource: str, principal: str, ttl: timedelta):
         lease_id = str(uuid4())
         cur = self._conn.cursor()
         try:
@@ -35,11 +30,12 @@ class Postgresql(Backend):
                 WHERE t.expires < excluded.created
                 """,
                 {
-                    'resource': resource,
-                    'lease': lease_id,
-                    'principal': principal,
-                    'ttl': ttl,
-                })
+                    "resource": resource,
+                    "lease": lease_id,
+                    "principal": principal,
+                    "ttl": ttl,
+                },
+            )
             if cur.rowcount == 1:
                 return str(lease_id)
             else:
@@ -54,7 +50,8 @@ class Postgresql(Backend):
                 f"""
                 DELETE FROM {self._table} WHERE resource = %s AND lease = %s
                 """,
-                (resource, lease_id))
+                (resource, lease_id),
+            )
         finally:
             cur.close()
 
@@ -67,7 +64,8 @@ class Postgresql(Backend):
                 WHERE resource=%s AND lease=%s
                     AND expires > current_timestamp
                 """,
-                (ttl, resource, lease_id))
+                (ttl, resource, lease_id),
+            )
             print(f"tt={ttl} r={resource} l={lease_id}")
             print(cur.rowcount)
             if cur.rowcount < 1:
@@ -82,7 +80,8 @@ class Postgresql(Backend):
                 f"""
                 SELECT principal, created, lease FROM {self._table}
                 WHERE resource = %s AND expires > current_timestamp""",
-                (resource,))
+                (resource,),
+            )
             row = cur.fetchone()
             return row and Lease(*row)
         finally:
@@ -96,7 +95,8 @@ class Postgresql(Backend):
                 SELECT count(lease) FROM {self._table}
                 WHERE resource = %s AND expires > current_timestamp
                 AND lease = %s""",
-                (resource, lease_id))
+                (resource, lease_id),
+            )
             return cur.fetchone()[0]
         finally:
             cur.close()

@@ -12,7 +12,7 @@ base_dir = os.path.dirname(__file__)
 
 config_file = f"{base_dir}/stormlock.cfg"
 
-lock = load_lock(f'{resource_name}_test', config_file)
+lock = load_lock(f"{resource_name}_test", config_file)
 
 
 def fail_lock():
@@ -20,8 +20,9 @@ def fail_lock():
         lock.acquire()
         assert False, "successfully got contested lock"
     except LockHeldException as e:
-        print(f"Lock for {e.resource} already held by "
-              f"{e.principal} with {e.lease_id}")
+        print(
+            f"Lock for {e.resource} already held by " f"{e.principal} with {e.lease_id}"
+        )
 
 
 # first clear the lock if it was left over from a previous run

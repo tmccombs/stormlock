@@ -6,8 +6,7 @@ from typing import Optional
 
 import redis
 
-from stormlock.backend import (
-        Backend, Lease, LockHeldException, LockExpiredException)
+from stormlock.backend import Backend, Lease, LockHeldException, LockExpiredException
 
 
 _LUA_ACQUIRE_SCRIPT = """
@@ -46,17 +45,13 @@ def _parse_lock(lock_data) -> Lease:
 
 
 class Redis(Backend):
-
     def __init__(
-            self,
-            *,
-            url: str = 'redis://localhost:6379',
-            # TODO: SSL options
-            ):
-        self._client = redis.Redis.from_url(
-                url,
-                max_connections=1,
-                )
+        self,
+        *,
+        url: str = "redis://localhost:6379",
+        # TODO: SSL options
+    ):
+        self._client = redis.Redis.from_url(url, max_connections=1,)
 
     @cached_property
     def _acquire(self):
@@ -71,11 +66,8 @@ class Redis(Backend):
         return self._client.register_script(_LUA_RENEW_SCRIPT)
 
     def lock(
-            self,
-            resource: str,
-            principal: str,
-            ttl: timedelta,
-            ):
+        self, resource: str, principal: str, ttl: timedelta,
+    ):
         token = secrets.token_bytes(16)
         args = [token, principal, time.time(), int(ttl.total_seconds())]
         contending_lock = self._acquire(keys=[resource], args=args)
@@ -96,10 +88,10 @@ class Redis(Backend):
             raise LockExpiredException(resource)
 
     def current(self, resource: str) -> Optional[Lease]:
-        data = self._client.hmget(resource, 'id', 'p', 'c')
+        data = self._client.hmget(resource, "id", "p", "c")
         if data[0]:
             return _parse_lock(data)
 
     def is_current(self, resource: str, lease_id: str):
         token = bytes.fromhex(lease_id)
-        return token == self._client.hget(resource, 'id')
+        return token == self._client.hget(resource, "id")
