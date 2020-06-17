@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from typing import Optional, NamedTuple, Type
 from importlib import metadata
+from typing import NamedTuple, Optional, Type
 
 
 class Lease(NamedTuple):
@@ -13,21 +13,9 @@ class Lease(NamedTuple):
 class LockHeldException(Exception):
     """Exception indicating the lock is already held."""
 
-    def __init__(self, resource: str, lease: Lease):
+    def __init__(self, resource: str, lease: Optional[Lease]):
         self.resource = resource
         self.lease = lease
-
-    @property
-    def principal(self) -> str:
-        return self.lease.principal
-
-    @property
-    def created(self) -> datetime:
-        return self.lease.created
-
-    @property
-    def lease_id(self) -> str:
-        return self.lease.id
 
 
 class LockExpiredException(Exception):
@@ -38,6 +26,10 @@ class LockExpiredException(Exception):
 
 
 class Backend(ABC):
+    @abstractmethod
+    def __init__(self, **kwargs):
+        pass
+
     @abstractmethod
     def lock(self, resource: str, principal: str, ttl: timedelta,) -> str:
         """
@@ -80,7 +72,9 @@ class Backend(ABC):
         a more efficient method.
         """
         curr = self.current(resource)
-        return curr and curr.id == lease_id
+        if curr:
+            return curr.id == lease_id
+        return False
 
 
 def find_backend(name: str) -> Type[Backend]:

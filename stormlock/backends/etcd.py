@@ -1,19 +1,18 @@
-from datetime import datetime, timedelta
 import struct
 import time
-from typing import Optional
+from datetime import datetime, timedelta
+from typing import List, Optional, Tuple
 
-import etcd3
-from etcd3.client import KVMetadata
-
-from stormlock.backend import Backend, Lease, LockHeldException, LockExpiredException
+# TODO: add type stubs for etcd
+import etcd3  # type: ignore
+from etcd3.client import KVMetadata  # type: ignore
+from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldException
 
 
 class _Keys:
     prefix: bytes
     principal: bytes
     created: bytes
-    end: bytes
 
     def __init__(self, key: str):
         self.prefix = key.encode()
@@ -30,7 +29,9 @@ def _prefix_end(key):
     return key + b"\xff"
 
 
-def _parse_lease(keys: _Keys, response: [(bytes, KVMetadata)]) -> Optional[Lease]:
+def _parse_lease(
+    keys: _Keys, response: List[Tuple[bytes, KVMetadata]]
+) -> Optional[Lease]:
     token = None
     for (value, meta) in response:
         if meta.key == keys.token:
@@ -39,7 +40,9 @@ def _parse_lease(keys: _Keys, response: [(bytes, KVMetadata)]) -> Optional[Lease
             principal = value.decode()
         elif meta.key == keys.created:
             created = datetime.fromtimestamp(struct.unpack("d", value)[0])
-    return token and Lease(principal, created, token)
+    if token:
+        return Lease(principal, created, token)
+    return None
 
 
 class Etcd(Backend):
@@ -79,14 +82,18 @@ class Etcd(Backend):
         )
         if success:
             return token
-        if not success:
-            raise LockHeldException(resource, _parse_lease(keys, responses[0]))
+        else:
+            held_lease = _parse_lease(keys, responses[0])
+            assert (
+                held_lease
+            ), "Unable to find held lease after failing to acquire lease"
+            raise LockHeldException(resource, held_lease)
 
     def unlock(self, resource: str, lease_id: str):
         # It's an etcd lease, so just release it
         self._client.revoke_lease(int(lease_id, 16))
 
-    def renew(self, resource: str, lease_id: str, ttl: timedelta) -> bool:
+    def renew(self, resource: str, lease_id: str, ttl: timedelta):
         resp = next(self._client.refresh_lease(int(lease_id, 16)))
         if resp.TTL <= 0:
             raise LockExpiredException(resource)

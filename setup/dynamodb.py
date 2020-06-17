@@ -51,7 +51,7 @@ def create_lock_table(
     # client.get_waiter('table_exists').wait(TableName=table_name)
     client.update_time_to_live(
         TableName=table_name,
-        TimeToLiveSpecification={"Enabled": True, "AttributeName": "expires",},
+        TimeToLiveSpecification={"Enabled": True, "AttributeName": "expires"},
     )
 
 

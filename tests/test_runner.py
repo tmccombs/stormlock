@@ -1,10 +1,9 @@
-from configparser import ConfigParser
-from datetime import timedelta
-from time import sleep
 import os
 import sys
+from datetime import timedelta
+from time import sleep
 
-from stormlock import load_lock, LockHeldException, LockExpiredException
+from stormlock import LockExpiredException, LockHeldException, load_lock
 
 resource_name = sys.argv[1]
 

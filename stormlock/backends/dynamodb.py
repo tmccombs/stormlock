@@ -1,12 +1,11 @@
-from datetime import datetime, timedelta
 import secrets
+from datetime import datetime, timedelta
 from time import time
-from typing import Optional
+from typing import Dict, Optional
 
-import boto3
-from boto3.dynamodb.conditions import Attr
-
-from stormlock.backend import Backend, Lease, LockHeldException, LockExpiredException
+import boto3  # type: ignore
+from boto3.dynamodb.conditions import Attr  # type: ignore
+from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldException
 
 
 def _aws_session(config: dict) -> boto3.session.Session:
@@ -18,9 +17,12 @@ def _aws_session(config: dict) -> boto3.session.Session:
     )
 
 
-def _parse_tags(tags: str) -> list:
+def _parse_tags(tags: str) -> Dict[str, str]:
     taglist = tags.split(",")
     return {k: v for (k, v) in (tag.split("=", 1) for tag in taglist)}
+
+
+MAX_RETRIES = 3
 
 
 class DynamoDB(Backend):
@@ -87,7 +89,7 @@ class DynamoDB(Backend):
                 Key={"resource": resource},
                 UpdateExpression="SET expires = :exp",
                 ConditionExpression=condition,
-                ExpressionAttributeValues={":exp": int(expire.timestamp()),},
+                ExpressionAttributeValues={":exp": int(expire.timestamp())},
             )
         except self._ConditionFailedException:
             raise LockExpiredException(resource)
@@ -103,3 +105,4 @@ class DynamoDB(Backend):
                 return None
             created = datetime.fromtimestamp(item["created"])
             return Lease(item["principal"], created, item["lease"])
+        return None

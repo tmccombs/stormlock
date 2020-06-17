@@ -2,9 +2,8 @@ from datetime import timedelta
 from typing import Optional
 from uuid import uuid4
 
-import psycopg2
-
-from stormlock.backend import Backend, Lease, LockHeldException, LockExpiredException
+import psycopg2  # type: ignore
+from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldException
 
 
 class Postgresql(Backend):

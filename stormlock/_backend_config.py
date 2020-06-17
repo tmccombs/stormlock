@@ -1,6 +1,6 @@
 from configparser import ConfigParser
-from inspect import signature, Signature, Parameter
-from typing import Optional
+from inspect import Parameter, Signature, signature
+from typing import Any, Dict, Optional
 
 from .backend import find_backend
 
@@ -16,7 +16,7 @@ def _read_parameter(param: Parameter, cfg: ConfigParser, section: str):
         else:
             return param.default
     if param.name in be_conf:
-        if annot == str or annot == Optional[str] or annot == Parameter.emtpy:
+        if annot == str or annot == Optional[str] or annot == Parameter.empty:
             return be_conf[param.name]
         if annot == int or annot == Optional[int]:
             return cfg.getint(section, param.name)
@@ -28,7 +28,7 @@ def _read_parameter(param: Parameter, cfg: ConfigParser, section: str):
 
 
 def _config_for_signature(cfg: ConfigParser, section: str, sig: Signature) -> dict:
-    kwargs = {}
+    kwargs: Dict[str, Any] = {}
     if section not in cfg:
         return kwargs
     used_keys = set()

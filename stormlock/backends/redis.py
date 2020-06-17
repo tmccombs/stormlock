@@ -1,13 +1,11 @@
-from datetime import datetime, timedelta
-from functools import cached_property
 import secrets
 import time
+from datetime import datetime, timedelta
+from functools import cached_property
 from typing import Optional
 
 import redis
-
-from stormlock.backend import Backend, Lease, LockHeldException, LockExpiredException
-
+from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldException
 
 _LUA_ACQUIRE_SCRIPT = """
 local lock = redis.call('hmget', KEYS[1], 'id', 'p', 'c')
@@ -91,6 +89,7 @@ class Redis(Backend):
         data = self._client.hmget(resource, "id", "p", "c")
         if data[0]:
             return _parse_lock(data)
+        return None
 
     def is_current(self, resource: str, lease_id: str):
         token = bytes.fromhex(lease_id)

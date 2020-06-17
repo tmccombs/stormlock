@@ -1,6 +1,6 @@
 import argparse
-from datetime import timedelta
 import sys
+from datetime import timedelta
 from typing import Optional
 
 from stormlock.backend import Lease, LockExpiredException, LockHeldException
@@ -54,12 +54,16 @@ def message(msg):
 
 
 def acquire(lock: StormLock, ttl: Optional[timedelta]):
+    # TODO: add support for retries
     try:
         lease = lock.acquire(ttl)
         print(lease)
     except LockHeldException as e:
         message("Lock held")
-        print_lease(e.lease)
+        if e.lease:
+            print_lease(e.lease)
+        else:
+            message("Held lock not found, try again?")
         sys.exit(2)
 
 

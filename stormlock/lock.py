@@ -1,12 +1,12 @@
+import os
 from configparser import ConfigParser
 from datetime import timedelta
 from getpass import getuser
-import os
 from socket import gethostname
 from typing import Optional
 
-from .backend import Backend, Lease
 from ._backend_config import backend_for_config
+from .backend import Backend, Lease
 
 
 class StormLock:
@@ -40,6 +40,7 @@ _SEARCH_PATHS = [
 
 
 def parse_ttl(ttl_str: str) -> timedelta:
+    # FIXME: make this more flexible
     (val, unit) = ttl_str.split(" ")
     kwargs = {unit: int(val)}
     return timedelta(**kwargs)
@@ -52,10 +53,12 @@ def _find_conf_file() -> str:
     raise Exception("Unable to find stormlock configuration file")
 
 
-def _get_cfg_value(cfg: ConfigParser, section: str, name: str) -> Optional[str]:
-    return cfg.get(section, name, fallback=None) or cfg.get(
+def _get_cfg_value(cfg: ConfigParser, section: str, name: str) -> str:
+    val = cfg.get(section, name, fallback=None) or cfg.get(
         "default", name, fallback=None
     )
+    assert val, f"Unable to find configuration for {section}.{name}"
+    return val
 
 
 def load_lock(resource: str, conf_file: Optional[str]) -> StormLock:
