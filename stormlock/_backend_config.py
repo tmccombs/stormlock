@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 from inspect import Parameter, Signature, signature
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Set
 
 from .backend import find_backend
 
@@ -31,7 +31,7 @@ def _config_for_signature(cfg: ConfigParser, section: str, sig: Signature) -> di
     kwargs: Dict[str, Any] = {}
     if section not in cfg:
         return kwargs
-    used_keys = set()
+    used_keys: Set[str] = set()
     for param in sig.parameters.values():
         if param.kind == Parameter.VAR_KEYWORD:
             for (k, v) in cfg[section].items():

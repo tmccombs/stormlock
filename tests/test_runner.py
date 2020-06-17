@@ -36,7 +36,7 @@ assert lock.is_current(id1)
 
 current = lock.current()
 print("current=", current)
-assert current.id == id1, "ids don't match"
+assert current is not None and current.id == id1, "ids don't match"
 
 fail_lock()
 
