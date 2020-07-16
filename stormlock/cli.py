@@ -1,3 +1,7 @@
+"""
+Module that implements the actual CLI executable for stormlock.
+"""
+
 import argparse
 import sys
 from datetime import timedelta
@@ -7,15 +11,16 @@ from stormlock.backend import Lease, LockExpiredException, LockHeldException
 from stormlock.lock import StormLock, load_lock, parse_ttl
 
 
-def add_resource_command(
+def _add_resource_command(
     subparsers,
     cmd: str,
     *,
     takes_lease: bool = False,
     takes_ttl: bool = False,
-    help: Optional[str] = None
+    helpmsg: Optional[str] = None
 ):
-    parser = subparsers.add_parser(cmd, help=help)
+    "Add a subcommand to the parser that takes a resource"
+    parser = subparsers.add_parser(cmd, help=helpmsg)
     parser.add_argument("resource")
     if takes_lease:
         parser.add_argument("lease_id", help="Id of an acquired lease")
@@ -25,67 +30,75 @@ def add_resource_command(
         )
 
 
-def build_parser():
+def _build_parser():
+    "Create the argument parser"
     parser = argparse.ArgumentParser(prog="stormlock")
     parser.add_argument("-c", "--config", help="config file")
     subparsers = parser.add_subparsers(dest="cmd", required=True)
-    add_resource_command(
-        subparsers, "acquire", takes_ttl=True, help="attempt to acquire a lock"
+    _add_resource_command(
+        subparsers, "acquire", takes_ttl=True, helpmsg="attempt to acquire a lock"
     )
-    add_resource_command(subparsers, "release", takes_lease=True, help="release a lock")
-    add_resource_command(
-        subparsers, "renew", takes_lease=True, takes_ttl=True, help="renew a lock"
+    _add_resource_command(
+        subparsers, "release", takes_lease=True, helpmsg="release a lock"
     )
-    add_resource_command(subparsers, "current", help="show currently held lock")
-    add_resource_command(
-        subparsers, "is-held", takes_lease=True, help="check if lease is still valid"
+    _add_resource_command(
+        subparsers, "renew", takes_lease=True, takes_ttl=True, helpmsg="renew a lock"
+    )
+    _add_resource_command(subparsers, "current", helpmsg="show currently held lock")
+    _add_resource_command(
+        subparsers, "is-held", takes_lease=True, helpmsg="check if lease is still valid"
     )
     return parser
 
 
 def print_lease(lease: Lease):
+    "Print the information for an active lease."
     print(lease.principal)
     print(lease.id)
     print(lease.created.isoformat(timespec="milliseconds"))
 
 
-def message(msg):
+def _message(msg):
     print(msg, file=sys.stderr)
 
 
 def acquire(lock: StormLock, ttl: Optional[timedelta]):
+    "attempt to acquire a lock"
     # TODO: add support for retries
     try:
         lease = lock.acquire(ttl)
         print(lease)
-    except LockHeldException as e:
-        message("Lock held")
-        if e.lease:
-            print_lease(e.lease)
+    except LockHeldException as exc:
+        _message("Lock held")
+        if exc.lease:
+            print_lease(exc.lease)
         else:
-            message("Held lock not found, try again?")
+            _message("Held lock not found, try again?")
         sys.exit(2)
 
 
 def renew(lock: StormLock, lease: str, ttl: Optional[timedelta]):
+    "attempt to renew a lock"
     try:
         lock.renew(lease, ttl)
     except LockExpiredException:
-        message("Lock expired")
+        _message("Lock expired")
         sys.exit(3)
 
 
 def current(lock: StormLock):
+    "get the currently held lock"
     lease = lock.current()
     if lease:
         print_lease(lease)
     else:
-        message("no lock held")
+        _message("no lock held")
         sys.exit(1)
 
 
 def run():
-    parser = build_parser()
+    "run the CLI program"
+    parser = _build_parser()
 
     args = parser.parse_args()
 

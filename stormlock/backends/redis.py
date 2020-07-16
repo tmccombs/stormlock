@@ -1,3 +1,4 @@
+"Redis backend"
 import secrets
 import time
 from datetime import datetime, timedelta
@@ -38,17 +39,22 @@ end
 
 
 def _parse_lock(lock_data) -> Lease:
-    (id, p, c) = lock_data
-    return Lease(p.decode(), datetime.fromtimestamp(float(c)), id.hex())
+    (lease_id, princ, created) = lock_data
+    return Lease(princ.decode(), datetime.fromtimestamp(float(created)), lease_id.hex())
 
 
 class Redis(Backend):
+    """
+    Stormlock backend that uses Redis as a data store.
+    """
+
     def __init__(
         self,
         *,
         url: str = "redis://localhost:6379",
         # TODO: SSL options
     ):
+        super().__init__()
         self._client = redis.Redis.from_url(url, max_connections=1,)
 
     @cached_property
@@ -72,8 +78,7 @@ class Redis(Backend):
         if contending_lock:
             lease = _parse_lock(contending_lock)
             raise LockHeldException(resource, lease)
-        else:
-            return token.hex()
+        return token.hex()
 
     def unlock(self, resource: str, lease_id: str):
         token = bytes.fromhex(lease_id)

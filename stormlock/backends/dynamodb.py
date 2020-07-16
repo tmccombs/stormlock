@@ -1,3 +1,4 @@
+"Dynamodb backend"
 import secrets
 from datetime import datetime, timedelta
 from time import time
@@ -19,13 +20,15 @@ def _aws_session(config: dict) -> boto3.session.Session:
 
 def _parse_tags(tags: str) -> Dict[str, str]:
     taglist = tags.split(",")
-    return {k: v for (k, v) in (tag.split("=", 1) for tag in taglist)}
+    return dict(tag.split("=", 1) for tag in taglist)
 
 
 MAX_RETRIES = 3
 
 
 class DynamoDB(Backend):
+    "Stormlock backend that uses DynamoDB as a data store."
+
     def __init__(
         self,
         *,
@@ -36,6 +39,7 @@ class DynamoDB(Backend):
         access_key_id: Optional[str] = None,
         secret_access_key: Optional[str] = None,
     ):
+        super().__init__()
         session = boto3.session.Session(
             profile_name=profile,
             aws_access_key_id=access_key_id,
@@ -45,6 +49,7 @@ class DynamoDB(Backend):
             "dynamodb", endpoint_url=endpoint, region_name=region
         ).Table(table)
         exceptions = self._table.meta.client.exceptions
+        # pylint: disable=C0103
         self._ConditionFailedException = exceptions.ConditionalCheckFailedException
 
     def lock(self, resource: str, principal: str, ttl: timedelta):
@@ -60,7 +65,9 @@ class DynamoDB(Backend):
             "expires": int(expires.timestamp()),
         }
 
-        condition = Attr("resource").not_exists() or Attr("expires").le(item["created"])
+        condition = Attr("resource").not_exists() or Attr("expires").lte(
+            item["created"]
+        )
         try:
             self._table.put_item(Item=item, ConditionExpression=condition)
             return lease_id

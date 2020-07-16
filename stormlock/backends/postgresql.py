@@ -1,3 +1,4 @@
+"Postgresql backend"
 from datetime import timedelta
 from typing import Optional
 from uuid import uuid4
@@ -7,7 +8,9 @@ from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldExce
 
 
 class Postgresql(Backend):
+    "Stormlock backend that uses postgresql as a data store."
     def __init__(self, connection: str, table: str = "stormlock"):
+        super().__init__()
         self._conn = psycopg2.connect(connection)
         self._conn.autocommit = True
         self._table = table
@@ -37,8 +40,7 @@ class Postgresql(Backend):
             )
             if cur.rowcount == 1:
                 return str(lease_id)
-            else:
-                raise LockHeldException(resource, self.current(resource))
+            raise LockHeldException(resource, self.current(resource))
         finally:
             cur.close()
 

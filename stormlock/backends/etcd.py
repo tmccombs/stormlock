@@ -1,3 +1,4 @@
+"Etcd backend"
 import struct
 import time
 from datetime import datetime, timedelta
@@ -9,12 +10,19 @@ from etcd3.client import KVMetadata  # type: ignore
 from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldException
 
 
+# pylint: disable=R0903
 class _Keys:
     prefix: bytes
+    "prefix at beginning of all keys"
     principal: bytes
+    "key for the principal"
     created: bytes
+    "key for the created timestamp"
+    token: bytes
+    "key for the unique token for the lease"
 
     def __init__(self, key: str):
+        super().__init__()
         self.prefix = key.encode()
         self.token = self.prefix + b"/id"
         self.principal = self.prefix + b"/p"
@@ -22,6 +30,7 @@ class _Keys:
 
     @property
     def end(self) -> bytes:
+        "key to use as the end of a range for all keys for the lease"
         return self.prefix + b"\xff"
 
 
@@ -46,6 +55,12 @@ def _parse_lease(
 
 
 class Etcd(Backend):
+    """
+    Stormlock backend that uses Etcd as a data store.
+
+    Note that renewing ignores the supplied ttl.
+    """
+
     def __init__(
         self,
         *,
@@ -59,6 +74,7 @@ class Etcd(Backend):
         user: Optional[str] = None,
         password: Optional[str] = None,
     ):
+        super().__init__()
         self._prefix = prefix
         self._client = etcd3.client(
             host, port, ca_cert, cert_key, cert_cert, timeout, user, password,
@@ -66,28 +82,25 @@ class Etcd(Backend):
 
     def lock(self, resource: str, principal: str, ttl: timedelta) -> str:
         keys = _Keys(self._prefix + resource)
-        tr = self._client.transactions
+        trans = self._client.transactions
         lease = self._client.lease(int(ttl.total_seconds()))
         token = format(lease.id, "x")
         created = time.time()
 
         success, responses = self._client.transaction(
-            compare=[tr.create(keys.token) == 0],
+            compare=[trans.create(keys.token) == 0],
             success=[
-                tr.put(keys.token, token, lease),
-                tr.put(keys.principal, principal.encode(), lease),
-                tr.put(keys.created, struct.pack("d", created), lease),
+                trans.put(keys.token, token, lease),
+                trans.put(keys.principal, principal.encode(), lease),
+                trans.put(keys.created, struct.pack("d", created), lease),
             ],
-            failure=[tr.get(keys.prefix, range_end=keys.end)],
+            failure=[trans.get(keys.prefix, range_end=keys.end)],
         )
         if success:
             return token
-        else:
-            held_lease = _parse_lease(keys, responses[0])
-            assert (
-                held_lease
-            ), "Unable to find held lease after failing to acquire lease"
-            raise LockHeldException(resource, held_lease)
+        held_lease = _parse_lease(keys, responses[0])
+        assert held_lease, "Unable to find held lease after failing to acquire lease"
+        raise LockHeldException(resource, held_lease)
 
     def unlock(self, resource: str, lease_id: str):
         # It's an etcd lease, so just release it
