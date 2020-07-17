@@ -9,6 +9,7 @@ from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldExce
 
 class Postgresql(Backend):
     "Stormlock backend that uses postgresql as a data store."
+
     def __init__(self, connection: str, table: str = "stormlock"):
         super().__init__()
         self._conn = psycopg2.connect(connection)

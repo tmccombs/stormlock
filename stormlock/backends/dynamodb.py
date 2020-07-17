@@ -20,11 +20,13 @@ def _aws_session(config: dict) -> boto3.session.Session:
 
 def _parse_tags(tags: str) -> Dict[str, str]:
     taglist = tags.split(",")
+
     def tag_pair(tag: str) -> Tuple[str, str]:
         res = tag.split("=", 1)
         if len(res) == 1:
             return (tag, "")
         return (res[0], res[1])
+
     return dict(tag_pair(tag) for tag in taglist)
 
 
