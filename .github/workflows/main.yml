@@ -1,4 +1,4 @@
-name: Lint
+name: Main
 
 on: [push, pull_request]
 
@@ -15,7 +15,8 @@ jobs:
           pip install poetry 
           poetry install -E etcd -E redis -E dynamodb -E postgresql
           poetry run pip install mypy pylint isort
-      - uses: psf/black@stable
+      # temparily use a commit that works for this
+      - uses: psf/black@fcf97961061982656a1384ecc1628e217a52a88c
       - name: Lint
         run: |
           poetry run mypy .
