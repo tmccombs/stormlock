@@ -7,12 +7,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with: 
+          python-version: '3.8'
       - name: Install
-        uses: actions/actions-poetry@v1.5.0
-        with:
-          python_version: 3.8.3
-          poetry_version: 1.0.9
-          args: install -E etcd -E redis -E dynamodb -E postgresql
-      - uses: ricardochaves/python-lint@v1.1.0
-        with:
-          python-root-list: stormlock
+        run: |
+          pip install poetry 
+          poetry install -E etcd -E redis -E dynamodb -E postgresql
+          poetry run pip install mypy pylint isort
+      - uses: psf/black@stable
+      - name: Lint
+        run: |
+          poetry run mypy .
+          poetry run pylint stormlock
+          poetry run isort **/*.py -c
+

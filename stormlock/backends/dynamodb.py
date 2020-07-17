@@ -2,7 +2,7 @@
 import secrets
 from datetime import datetime, timedelta
 from time import time
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 import boto3  # type: ignore
 from boto3.dynamodb.conditions import Attr  # type: ignore
@@ -20,7 +20,12 @@ def _aws_session(config: dict) -> boto3.session.Session:
 
 def _parse_tags(tags: str) -> Dict[str, str]:
     taglist = tags.split(",")
-    return dict(tag.split("=", 1) for tag in taglist)
+    def tag_pair(tag: str) -> Tuple[str, str]:
+        res = tag.split("=", 1)
+        if len(res) == 1:
+            return (tag, "")
+        return (res[0], res[1])
+    return dict(tag_pair(tag) for tag in taglist)
 
 
 MAX_RETRIES = 3
