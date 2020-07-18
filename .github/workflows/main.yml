@@ -14,7 +14,7 @@ jobs:
         run: |
           pip install poetry 
           poetry install -E etcd -E redis -E dynamodb -E postgresql
-          poetry run pip install mypy pylint isort
+          poetry run pip install mypy pylint
       # temparily use a commit that works for this
       - uses: psf/black@fcf97961061982656a1384ecc1628e217a52a88c
       - name: Lint
