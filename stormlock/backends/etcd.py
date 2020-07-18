@@ -7,6 +7,7 @@ from typing import List, Optional, Tuple
 # TODO: add type stubs for etcd
 import etcd3  # type: ignore
 from etcd3.client import KVMetadata  # type: ignore
+
 from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldException
 
 

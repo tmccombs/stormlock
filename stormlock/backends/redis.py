@@ -6,6 +6,7 @@ from functools import cached_property
 from typing import Optional
 
 import redis
+
 from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldException
 
 _LUA_ACQUIRE_SCRIPT = """

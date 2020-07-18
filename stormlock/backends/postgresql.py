@@ -4,6 +4,7 @@ from typing import Optional
 from uuid import uuid4
 
 import psycopg2  # type: ignore
+
 from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldException
 
 

@@ -6,6 +6,7 @@ from typing import Dict, Optional, Tuple
 
 import boto3  # type: ignore
 from boto3.dynamodb.conditions import Attr  # type: ignore
+
 from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldException
 
 
