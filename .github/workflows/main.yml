@@ -7,6 +7,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Poetry cache
+        uses: actions/cache@v2
+        with:
+          key: poetry-${{ hashFiles('poetry.lock') }}-lint
+          path: ~/.cache/pypoetry
+          restore-keys: |
+            poetry-${{ hashFiles('poetry.lock') }}-
+            poetry-
       - uses: actions/setup-python@v2
         with: 
           python-version: '3.8'
