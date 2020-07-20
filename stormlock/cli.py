@@ -18,7 +18,7 @@ def _add_resource_command(
     takes_lease: bool = False,
     takes_ttl: bool = False,
     helpmsg: Optional[str] = None
-):
+) -> argparse.ArgumentParser:
     "Add a subcommand to the parser that takes a resource"
     parser = subparsers.add_parser(cmd, help=helpmsg)
     parser.add_argument("resource")
@@ -28,6 +28,7 @@ def _add_resource_command(
         parser.add_argument(
             "-t", "--ttl", type=parse_ttl, help="Override time to live for lease"
         )
+    return parser
 
 
 def _build_parser():
@@ -44,18 +45,30 @@ def _build_parser():
     _add_resource_command(
         subparsers, "renew", takes_lease=True, takes_ttl=True, helpmsg="renew a lock"
     )
-    _add_resource_command(subparsers, "current", helpmsg="show currently held lock")
+    current_cmd = _add_resource_command(
+        subparsers, "current", helpmsg="show currently held lock"
+    )
+    current_cmd.add_argument(
+        "--id-only", action="store_true", help="only print the lease id"
+    )
     _add_resource_command(
         subparsers, "is-held", takes_lease=True, helpmsg="check if lease is still valid"
     )
     return parser
 
 
-def print_lease(lease: Lease):
+def print_lease(lease: Lease, id_only: bool = False):
     "Print the information for an active lease."
-    print(lease.principal)
-    print(lease.id)
-    print(lease.created.isoformat(timespec="milliseconds"))
+    if id_only:
+        print(lease.id)
+    else:
+        print(
+            "{}\t{}\t{}".format(
+                lease.principal,
+                lease.created.isoformat(timespec="milliseconds"),
+                lease.id,
+            )
+        )
 
 
 def _message(msg):
@@ -86,13 +99,19 @@ def renew(lock: StormLock, lease: str, ttl: Optional[timedelta]):
         sys.exit(3)
 
 
-def current(lock: StormLock):
+def current(lock: StormLock, id_only: bool):
     "get the currently held lock"
     lease = lock.current()
     if lease:
-        print_lease(lease)
+        print_lease(lease, id_only)
     else:
         _message("no lock held")
+        sys.exit(1)
+
+
+def is_held(lock: StormLock, lease: str):
+    "test if the lease is currently active"
+    if not lock.is_current(lease):
         sys.exit(1)
 
 
@@ -112,4 +131,6 @@ def run():
     elif cmd == "renew":
         renew(lock, args.lease_id, args.ttl)
     elif cmd == "current":
-        current(lock)
+        current(lock, args.id_only)
+    elif cmd == "is-held":
+        is_held(lock, args.lease_id)
