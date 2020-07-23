@@ -156,6 +156,8 @@ def parse_ttl(ttl_str: str) -> timedelta:
 
 
 def _find_conf_file() -> str:
+    if "STORMLOCK_CONFIG" in os.environ:
+        return os.environ["STORMLOCK_CONFIG"]
     for path in _SEARCH_PATHS:
         if os.path.isfile(path):
             return path

@@ -30,4 +30,62 @@ jobs:
           poetry run mypy .
           poetry run pylint stormlock
           poetry run isort **/*.py -c
+  test:
+    runs-on: ubuntu-latest
+    container: python
+    strategy:
+      fail-fast: false
+      matrix:
+        backend: [etcd, redis, dynamodb, postgresql]
+    services:
+      etcd:
+        image: quay.io/coreos/etcd:v3.4.10
+        env:
+          ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2379
+          ETCD_ADVERTISE_CLIENT_URLS: http://0.0.0.0:2379
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      dynamodb:
+        image: amazon/dynamodb-local
+      postgresql:
+        image: postgres
+        env:
+          POSTGRES_USER: test
+          POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Poetry cache
+        uses: actions/cache@v2
+        with:
+          key: poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.backend }}
+          path: ~/.cache/pypoetry
+          restore-keys: |
+            poetry-${{ hashFiles('poetry.lock') }}-
+            poetry-
+      - name: Install
+        run: |
+          pip install poetry
+          poetry install -E ${{ matrix.backend }}
+      - name: Setup dynamodb
+        if: matrix.backend == 'dynamodb'
+        run: poetry run python setup/dynamodb.py ci
+      - name: Setup postgresql
+        if: matrix.backend == 'postgresql'
+        run: poetry run python setup/sql.py postgresql://test@postgresql
+      - name: Test CLI
+        run: poetry run tests/test_cli.sh
+        env:
+          STORMLOCK_CONFIG: tests/ci/${{ matrix.backend }}.cfg
+
 

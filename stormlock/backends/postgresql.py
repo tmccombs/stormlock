@@ -69,8 +69,6 @@ class Postgresql(Backend):
                 """,
                 (ttl, resource, lease_id),
             )
-            print(f"tt={ttl} r={resource} l={lease_id}")
-            print(cur.rowcount)
             if cur.rowcount < 1:
                 raise LockExpiredException(resource)
         finally:

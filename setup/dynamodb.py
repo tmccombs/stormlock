@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 from typing import Optional
 
 import boto3
@@ -55,15 +56,21 @@ def create_lock_table(
     )
 
 
-def test_setup():
+def test_setup(endpoint="http://localhost:8000"):
     create_lock_table(
         aws_access_key_id="test",
         aws_secret_access_key="test",
-        endpoint="http://localhost:8000",
+        endpoint=endpoint,
         region="us-east-1",
     )
 
 
 if __name__ == "__main__":
-    # TODO: parse CLI flags
-    create_lock_table()
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "test":
+            test_setup()
+        elif sys.argv[1] == "ci":
+            test_setup("http://dynamodb:8000")
+    else:
+        # TODO: parse CLI flags
+        create_lock_table()
