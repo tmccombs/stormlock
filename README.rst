@@ -2,6 +2,14 @@
 Stormlock
 ==============
 
+|status| |version|
+
+.. |status| image:: https://github.com/tmccombs/stormlock/workflows/Main/badge.svg
+    :alt: Build Status
+    :target: https://github.com/tmccombs/stormlock/actions
+.. |version| image:: https://img.shields.io/pypi/v/stormlock
+    :alt: Version
+
 .. note:: Stormlock is a work in progress and not ready for production use.
   Also documentation is mostly missing at this point.
 

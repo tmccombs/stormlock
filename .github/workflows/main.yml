@@ -87,5 +87,3 @@ jobs:
         run: poetry run tests/test_cli.sh
         env:
           STORMLOCK_CONFIG: tests/ci/${{ matrix.backend }}.cfg
-
-
