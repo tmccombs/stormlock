@@ -16,11 +16,11 @@ fmt:
   black .
 
 release version:
-    @git branch --show-current | grep -q '^main$' || { \
+    git branch --show-current | grep -q '^main$' || { \
         echo "must be on main branch"; false; }
-    @git diff-index --shortstat origin/main | grep -q . && { \
+    test -z `git diff-index --cached --shortstat origin/main` || { \
         echo "git index must be clean"; false; }
     sed -i '/version =/s/".*"$/"{{ version }}"/' pyproject.toml
     git commit -m "Bump to version {{ version }}" pyproject.toml
-    git tag -a v{{ version }}
-    git push --tags +main
+    git tag -a v{{ version }} -m "Version {{ version }}"
+    #git push --tags +main
