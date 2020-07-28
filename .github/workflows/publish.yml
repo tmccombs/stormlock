@@ -36,9 +36,9 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           draft: false
-          prerelease: ${{ contains(github.ref, '-' }}
+          prerelease: ${{ contains(github.ref, '-') }}
       - name: Upload wheel
-        uses: actions/upload-release-asset
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -46,7 +46,7 @@ jobs:
           asset_path: ./dist/stormlock-${{ env.VERSION }}-py3-none-any.whl
           asset_name: stormlock-${{ env.VERSION }}-py3-none-any.whl
       - name: Upload sdist
-        uses: actions/upload-release-asset
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
