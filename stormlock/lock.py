@@ -12,6 +12,7 @@ import os
 from configparser import ConfigParser
 from datetime import timedelta
 from getpass import getuser
+import re
 from socket import gethostname
 from typing import Optional
 
@@ -136,6 +137,15 @@ _SEARCH_PATHS = [
     "~/.stormlock.cfg",
 ]
 
+_TTL_PAT = re.compile(r'^(\d+) *([a-z]+)$')
+
+
+def _expand_unit(abbrev: str) -> str:
+    for unit in ['days', 'hours', 'minutes', 'seconds']:
+        if unit.startswith(abbrev):
+            return unit
+    raise ValueError(f"{abbrev} is not a valid unit")
+
 
 def parse_ttl(ttl_str: str) -> timedelta:
     """
@@ -149,8 +159,8 @@ def parse_ttl(ttl_str: str) -> timedelta:
     Returns:
         A `datetime.timedelta` representing the time delta in the input string.
     """
-    # FIXME: make this more flexible
-    (val, unit) = ttl_str.split(" ")
+    (val, unit) = _TTL_PAT.match(ttl_str).groups()
+    unit = _expand_unit(unit)
     kwargs = {unit: int(val)}
     return timedelta(**kwargs)
 

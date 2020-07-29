@@ -124,7 +124,7 @@ Backends
 The currently supported backends are:
 
 * Etcd
-    - Renewing a lock always uses the same TTL as the original acquisition
+    * Renewing a lock always uses the same TTL as the original acquisition
 * Redis
 * DynamoDB
 * PostgreSQL
