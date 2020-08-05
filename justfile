@@ -15,6 +15,9 @@ black-chk:
 fmt:
   black .
 
+isort:
+    isort **/*.py
+
 release version:
     git branch --show-current | grep -q '^main$' || { \
         echo "must be on main branch"; false; }

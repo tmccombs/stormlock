@@ -9,10 +9,10 @@ Functions:
     parse_ttl
 """
 import os
+import re
 from configparser import ConfigParser
 from datetime import timedelta
 from getpass import getuser
-import re
 from socket import gethostname
 from typing import Optional
 
