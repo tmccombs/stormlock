@@ -18,6 +18,9 @@ fmt:
 isort:
     isort **/*.py
 
+test backend:
+    cd tests && bash ./test_cli.sh {{ backend }}
+
 release version:
     git branch --show-current | grep -q '^main$' || { \
         echo "must be on main branch"; false; }

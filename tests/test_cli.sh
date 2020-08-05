@@ -27,7 +27,7 @@ echo "Locked $resource1 with $id1"
 
 stormlock is-held $resource1 "$id1" || fail "lock not held"
 
-read principle timestamp lease_id < <(stormlock current $resource1)
+read principle timestamp lease_id < <(stormlock current -f oneline $resource1)
 echo "principle=$principle created=$timestamp id=$lease_id"
 
 [[ "$principle" == "test_user" ]] || fail "unexpected principle ${principle}"
