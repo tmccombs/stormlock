@@ -3,6 +3,7 @@ Module that implements the actual CLI executable for stormlock.
 """
 
 import argparse
+import json
 import sys
 from datetime import timedelta
 from typing import Optional
@@ -17,7 +18,7 @@ def _add_resource_command(
     *,
     takes_lease: bool = False,
     takes_ttl: bool = False,
-    helpmsg: Optional[str] = None
+    helpmsg: Optional[str] = None,
 ) -> argparse.ArgumentParser:
     "Add a subcommand to the parser that takes a resource"
     parser = subparsers.add_parser(cmd, help=helpmsg)
@@ -49,7 +50,18 @@ def _build_parser():
         subparsers, "current", helpmsg="show currently held lock"
     )
     current_cmd.add_argument(
-        "--id-only", action="store_true", help="only print the lease id"
+        "-f",
+        "--format",
+        choices=["id", "json", "lines", "oneline", "cols", "rows"],
+        default="rows",
+        help="format to print lease info",
+    )
+    current_cmd.add_argument(
+        "--id-only",
+        action="store_const",
+        const="id",
+        dest="format",
+        help="equivalent to --format=id",
     )
     _add_resource_command(
         subparsers, "is-held", takes_lease=True, helpmsg="check if lease is still valid"
@@ -57,18 +69,35 @@ def _build_parser():
     return parser
 
 
-def print_lease(lease: Lease, id_only: bool = False):
+def print_lease(lease: Lease, fmt: str):
     "Print the information for an active lease."
-    if id_only:
+
+    def timestamp():
+        return lease.created.isoformat(timespec="milliseconds")
+
+    def print_delimited(delim: str):
+        print(delim.join([lease.principal, timestamp(), lease.id]))
+
+    if fmt == "id":
         print(lease.id)
-    else:
-        print(
-            "{}\t{}\t{}".format(
-                lease.principal,
-                lease.created.isoformat(timespec="milliseconds"),
-                lease.id,
-            )
+    elif fmt == "rows":
+        print(f"Principal: {lease.principal}")
+        print(f"Created: {timestamp()}")
+        print(f"Id: {lease.id}")
+    elif fmt == "oneline":
+        print_delimited("\t")
+    elif fmt == "lines":
+        print_delimited("\n")
+    elif fmt == "json":
+        json.dump(
+            {"id": lease.id, "created": timestamp(), "principal": lease.principal},
+            sys.stdout,
         )
+    elif fmt == "cols":
+        fields = [lease.principal, timestamp(), lease.id]
+        width = max(map(len, fields)) + 4
+        print("{:{w}}{:{w}}{:{w}}".format("PRINCIPAL", "CREATED", "ID", w=width))
+        print("{:{w}}{:{w}}{:{w}}".format(*fields, w=width))
 
 
 def _message(msg):
@@ -84,7 +113,7 @@ def acquire(lock: StormLock, ttl: Optional[timedelta]):
     except LockHeldException as exc:
         _message("Lock held")
         if exc.lease:
-            print_lease(exc.lease)
+            print_lease(exc.lease, "id")
         else:
             _message("Held lock not found, try again?")
         sys.exit(2)
@@ -99,11 +128,11 @@ def renew(lock: StormLock, lease: str, ttl: Optional[timedelta]):
         sys.exit(3)
 
 
-def current(lock: StormLock, id_only: bool):
+def current(lock: StormLock, fmt: str):
     "get the currently held lock"
     lease = lock.current()
     if lease:
-        print_lease(lease, id_only)
+        print_lease(lease, fmt)
     else:
         _message("no lock held")
         sys.exit(1)
@@ -131,6 +160,6 @@ def run():
     elif cmd == "renew":
         renew(lock, args.lease_id, args.ttl)
     elif cmd == "current":
-        current(lock, args.id_only)
+        current(lock, args.format)
     elif cmd == "is-held":
         is_held(lock, args.lease_id)

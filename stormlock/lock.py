@@ -137,11 +137,11 @@ _SEARCH_PATHS = [
     "~/.stormlock.cfg",
 ]
 
-_TTL_PAT = re.compile(r'^(\d+) *([a-z]+)$')
+_TTL_PAT = re.compile(r"^(\d+) *([a-z]+)$")
 
 
 def _expand_unit(abbrev: str) -> str:
-    for unit in ['days', 'hours', 'minutes', 'seconds']:
+    for unit in ["days", "hours", "minutes", "seconds"]:
         if unit.startswith(abbrev):
             return unit
     raise ValueError(f"{abbrev} is not a valid unit")
@@ -159,7 +159,10 @@ def parse_ttl(ttl_str: str) -> timedelta:
     Returns:
         A `datetime.timedelta` representing the time delta in the input string.
     """
-    (val, unit) = _TTL_PAT.match(ttl_str).groups()
+    match = _TTL_PAT.match(ttl_str)
+    if match is None:
+        raise ValueError("Invalid TTL specification " + ttl_str)
+    (val, unit) = match.groups()
     unit = _expand_unit(unit)
     kwargs = {unit: int(val)}
     return timedelta(**kwargs)
