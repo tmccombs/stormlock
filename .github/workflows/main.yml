@@ -62,6 +62,11 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      mysql:
+        image: mariadb
+        env:
+          MYSQL_ROOT_PASSWORD: test
+          MYSQL_DATABASE: test
 
     steps:
       - uses: actions/checkout@v2
@@ -83,6 +88,9 @@ jobs:
       - name: Setup postgresql
         if: matrix.backend == 'postgresql'
         run: poetry run python setup/sql.py postgresql://test@postgresql
+      - name: Setup mysql
+        if: matrix.backend == 'mysql'
+        run: poetry run python setup/sql.py mysql://root:test@mysql/test
       - name: Test CLI
         run: poetry run tests/test_cli.sh
         env:

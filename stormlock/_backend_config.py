@@ -1,4 +1,5 @@
 "Load a backend from configuration"
+import contextlib
 from configparser import ConfigParser
 from inspect import Parameter, Signature, signature
 from typing import Any, Dict, Optional, Set
@@ -26,6 +27,16 @@ def _read_parameter(param: Parameter, cfg: ConfigParser, section: str):
     return param.default
 
 
+def _parse_arg(arg: str):
+    if arg in ["true", "True"]:
+        return True
+    if arg in ["false", "False"]:
+        return False
+    with contextlib.suppress(ValueError):
+        return int(arg)
+    return arg
+
+
 def _config_for_signature(cfg: ConfigParser, section: str, sig: Signature) -> dict:
     kwargs: Dict[str, Any] = {}
     if section not in cfg:
@@ -35,7 +46,7 @@ def _config_for_signature(cfg: ConfigParser, section: str, sig: Signature) -> di
         if param.kind == Parameter.VAR_KEYWORD:
             for (k, val) in cfg[section].items():
                 if k not in used_keys:
-                    kwargs[k] = val
+                    kwargs[k] = _parse_arg(val)
         elif param.kind != Parameter.VAR_POSITIONAL:
             used_keys.add(param.name)
             val = _read_parameter(param, cfg, section)
