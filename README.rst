@@ -9,6 +9,7 @@ Stormlock
     :target: https://github.com/tmccombs/stormlock/actions
 .. |version| image:: https://img.shields.io/pypi/v/stormlock
     :alt: Version
+    :target: https://pypi.org/project/stormlock/
 
 .. note:: Stormlock is beta quality and not ready for production use.
 
@@ -35,7 +36,7 @@ resource
     A unique resource that is protected by a lock. The resource name is used as the key for storing
     the lock in the backend.
 principal
-    Who is holding the lock. When a lock is held, an identifier for the principal is stored in the 
+    Who is holding the lock. When a lock is held, an identifier for the principal is stored in the
     backend so that it is easy to see who currently has the lock.
 backend
     Some form of database which stores the state of the lock. Multiple backends are supported, and
@@ -44,8 +45,8 @@ ttl
     Time to live. How long a lease on a lock should live before expiring. Renewing a lease sets
     a new time to live.
 lease
-    A handle on an actively held lock. You hold the lock for a resource from the time you acquire 
-    a lease to the time you release it, or the lease expires. Only one lease can exist for a 
+    A handle on an actively held lock. You hold the lock for a resource from the time you acquire
+    a lease to the time you release it, or the lease expires. Only one lease can exist for a
     resource at a time.
 lease id
     A unique, opaque identifier for a lease. This id is needed to perform operations on a lease,
@@ -105,14 +106,14 @@ stormlock renew [--ttl=\ *TTL*\ ] *RESOURCE* *LEASE_ID*
     Attempt to renew the given lease on the given resource. If the lease is no longer the
     active lease for the resource, returns an error code.
 stormlock current [--id-only] *RESOURCE*
-    Retrieve information about the current lease on a resource, if any. 
+    Retrieve information about the current lease on a resource, if any.
 
     If a lease is active returns a line containing the principal, time the lease was created,
     and the lase id seperated by tabs.  If ``--id-only`` is passed, only the lease id is printed.
 
     If no lease is active an error message is printed and an error code is returned.
 stormlock is-held *RESOURCE* *LEASE_ID*
-    Test if a lease is currently active. Returns a 0 status code if it is, otherwise returns a 
+    Test if a lease is currently active. Returns a 0 status code if it is, otherwise returns a
     non-zero status code.
 
 A specific configuration file can be specified by either supplying a file with the ``-c`` or
