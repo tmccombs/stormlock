@@ -16,12 +16,12 @@ jobs:
             poetry-${{ hashFiles('poetry.lock') }}-
             poetry-
       - uses: actions/setup-python@v2
-        with: 
+        with:
           python-version: '3.8'
       - name: Install
         run: |
-          pip install poetry 
-          poetry install -E etcd -E redis -E dynamodb -E postgresql
+          pip install poetry
+          poetry install -E etcd -E redis -E dynamodb -E postgresql -E mysql
           poetry run pip install mypy pylint
       # temparily use a commit that works for this
       - uses: psf/black@fcf97961061982656a1384ecc1628e217a52a88c
@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        backend: [etcd, redis, dynamodb, postgresql]
+        backend: [etcd, redis, dynamodb, postgresql, mysql]
     services:
       etcd:
         image: quay.io/coreos/etcd:v3.4.10
