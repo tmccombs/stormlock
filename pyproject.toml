@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "stormlock"
-version = "0.1.2"
+version = "0.2.0"
 description = "Simple distributed lock with support for multiple backends"
 readme = "README.rst"
 repository = "https://github.com/tmccombs/stormlock"
