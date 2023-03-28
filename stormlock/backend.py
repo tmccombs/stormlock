@@ -136,7 +136,12 @@ class Backend(ABC):
         """
 
     @abstractmethod
-    def lock(self, resource: str, principal: str, ttl: timedelta,) -> str:
+    def lock(
+        self,
+        resource: str,
+        principal: str,
+        ttl: timedelta,
+    ) -> str:
         """
         Implementation of acquiring a lock.
 

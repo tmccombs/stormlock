@@ -43,7 +43,7 @@ def _parse_lease(
     keys: _Keys, response: List[Tuple[bytes, KVMetadata]]
 ) -> Optional[Lease]:
     token = None
-    for (value, meta) in response:
+    for value, meta in response:
         if meta.key == keys.token:
             token = value.decode()
         elif meta.key == keys.principal:
@@ -78,7 +78,14 @@ class Etcd(Backend):
         super().__init__()
         self._prefix = prefix
         self._client = etcd3.client(
-            host, port, ca_cert, cert_key, cert_cert, timeout, user, password,
+            host,
+            port,
+            ca_cert,
+            cert_key,
+            cert_cert,
+            timeout,
+            user,
+            password,
         )
 
     def lock(self, resource: str, principal: str, ttl: timedelta) -> str:

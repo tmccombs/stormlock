@@ -56,7 +56,10 @@ class Redis(Backend):
         # TODO: SSL options
     ):
         super().__init__()
-        self._client = redis.Redis.from_url(url, max_connections=1,)
+        self._client = redis.Redis.from_url(
+            url,
+            max_connections=1,
+        )
 
     @cached_property
     def _acquire(self):
@@ -71,7 +74,10 @@ class Redis(Backend):
         return self._client.register_script(_LUA_RENEW_SCRIPT)
 
     def lock(
-        self, resource: str, principal: str, ttl: timedelta,
+        self,
+        resource: str,
+        principal: str,
+        ttl: timedelta,
     ):
         token = secrets.token_bytes(16)
         args = [token, principal, time.time(), int(ttl.total_seconds())]

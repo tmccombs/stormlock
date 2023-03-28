@@ -44,7 +44,7 @@ def _config_for_signature(cfg: ConfigParser, section: str, sig: Signature) -> di
     used_keys: Set[str] = set()
     for param in sig.parameters.values():
         if param.kind == Parameter.VAR_KEYWORD:
-            for (k, val) in cfg[section].items():
+            for k, val in cfg[section].items():
                 if k not in used_keys:
                     kwargs[k] = _parse_arg(val)
         elif param.kind != Parameter.VAR_POSITIONAL:
