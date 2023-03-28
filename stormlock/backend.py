@@ -49,6 +49,8 @@ class LockHeldException(Exception):
             the currently held lease or the lock was released between the attempted
             acquisition and retrieving the active lease (on some backends this is
             impossible).
+        principal:
+            The same as lease.principal, or None if lease is None
     """
 
     def __init__(self, resource: str, lease: Optional[Lease]):
@@ -57,7 +59,8 @@ class LockHeldException(Exception):
         self.lease = lease
 
     @property
-    def principal(self):
+    def principal(self) -> Optional[str]:
+        "The principal that holds the lease, or None"
         try:
             return self.lease.principal
         except AttributeError:
@@ -189,7 +192,6 @@ class Backend(ABC):
     def close(self):
         "Close any open connection(s) for the backend"
         # By default do nothing
-        pass
 
     def __enter__(self):
         return self

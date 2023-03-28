@@ -12,7 +12,7 @@ def _read_parameter(param: Parameter, cfg: ConfigParser, section: str):
     annot = param.annotation
 
     if annot in (dict, Optional[dict]):
-        section_name = "{}.{}".format(section, param.name)
+        section_name = f"{section}.{param.name}"
         if section_name in cfg:
             return dict(cfg[section_name])
         return param.default

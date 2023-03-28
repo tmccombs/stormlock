@@ -74,8 +74,8 @@ class Postgresql(Backend):
             )
             row = cur.fetchone()
             if row:
-                principal, created, id = row
-                return Lease(principal, created, str(id))
+                principal, created, _id = row
+                return Lease(principal, created, str(_id))
             return None
 
     def is_current(self, resource: str, lease_id: str) -> bool:

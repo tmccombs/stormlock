@@ -96,7 +96,7 @@ def print_lease(lease: Lease, fmt: str):
     elif fmt == "cols":
         fields = [lease.principal, timestamp(), lease.id]
         width = max(map(len, fields)) + 4
-        print("{:{w}}{:{w}}{:{w}}".format("PRINCIPAL", "CREATED", "ID", w=width))
+        print(f"{'PRINCIPAL':{width}}{'CREATED':{width}}{'ID':{width}}")
         print("{:{w}}{:{w}}{:{w}}".format(*fields, w=width))
 
 

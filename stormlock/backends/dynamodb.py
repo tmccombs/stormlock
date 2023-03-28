@@ -79,8 +79,8 @@ class DynamoDB(Backend):
         try:
             self._table.put_item(Item=item, ConditionExpression=condition)
             return lease_id
-        except self._ConditionFailedException:
-            raise LockHeldException(resource, self.current(resource))
+        except self._ConditionFailedException as exc:
+            raise LockHeldException(resource, self.current(resource)) from exc
 
     def unlock(self, resource: str, lease_id: str):
         try:
@@ -106,8 +106,8 @@ class DynamoDB(Backend):
                 ConditionExpression=condition,
                 ExpressionAttributeValues={":exp": int(expire.timestamp())},
             )
-        except self._ConditionFailedException:
-            raise LockExpiredException(resource)
+        except self._ConditionFailedException as exc:
+            raise LockExpiredException(resource) from exc
 
     def current(self, resource: str) -> Optional[Lease]:
         item = self._table.get_item(

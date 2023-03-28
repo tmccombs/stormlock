@@ -18,6 +18,10 @@ mysql-connector-python = { version = "^8.0.21", optional = true }
 [tool.poetry.group.types.dependencies]
 types-redis = "^4.5.3"
 
+
+[tool.poetry.group.lint.dependencies]
+pylint = "^2.17.1"
+
 [tool.poetry.extras]
 etcd = ["etcd3"]
 redis = ["redis"]
@@ -43,7 +47,7 @@ user_parentheses = true
 line_length = 88
 
 [tool.pylint.messages_control]
-disable = "C0330, C0326, W0511"
+disable = "W0511"
 
 [tool.pylint.format]
 max-line-length = "88"

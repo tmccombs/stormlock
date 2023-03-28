@@ -174,7 +174,7 @@ def _find_conf_file() -> str:
     for path in _SEARCH_PATHS:
         if os.path.isfile(path):
             return path
-    raise Exception("Unable to find stormlock configuration file")
+    raise RuntimeError("Unable to find stormlock configuration file")
 
 
 def _get_cfg_value(cfg: ConfigParser, section: str, name: str) -> str:
