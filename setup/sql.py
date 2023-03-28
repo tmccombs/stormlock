@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-import os
 import sys
 from os import path
 from urllib.parse import urlparse
 
 url = sys.argv[1]
 if url.startswith("postgresql"):
-    from psycopg2 import connect as connect_url
+    from psycopg import connect as connect_url
 
     filename = "postgresql.sql"
 elif url.startswith("mysql"):
@@ -28,7 +27,7 @@ elif url.startswith("mysql"):
     filename = "mysql.sql"
 else:
     print("Unsupported database connection:", url, file=sys.stderr)
-    os.exit(1)
+    sys.exit(1)
 
 sql_path = path.join(path.dirname(__file__), filename)
 
