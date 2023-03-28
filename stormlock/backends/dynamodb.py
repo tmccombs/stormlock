@@ -118,6 +118,6 @@ class DynamoDB(Backend):
         if item:
             if item["expires"] <= time():
                 return None
-            created = datetime.fromtimestamp(item["created"])
+            created = datetime.fromtimestamp(int(item["created"]))
             return Lease(item["principal"], created, item["lease"])
         return None
