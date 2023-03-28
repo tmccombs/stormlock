@@ -3,7 +3,7 @@
 import sys
 from typing import Optional, Any
 
-import boto3
+import boto3  # type: ignore
 
 
 def create_lock_table(

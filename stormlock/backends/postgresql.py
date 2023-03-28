@@ -3,7 +3,7 @@ from datetime import timedelta
 from typing import Optional
 from uuid import uuid4
 
-import psycopg  # type: ignore
+import psycopg
 from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldException
 
 
@@ -87,7 +87,8 @@ class Postgresql(Backend):
                 AND lease = %s""",
                 (resource, lease_id),
             )
-            return cur.fetchone()[0]
+            row = cur.fetchone()
+            return row and row[0]
 
     def close(self):
         self._conn.close()

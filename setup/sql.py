@@ -5,11 +5,14 @@ from urllib.parse import urlparse
 
 url = sys.argv[1]
 if url.startswith("postgresql"):
-    from psycopg import connect as connect_url
+    from psycopg import connect
+
+    def connect_url(url):
+        return connect(url)
 
     filename = "postgresql.sql"
 elif url.startswith("mysql"):
-    from mysql.connector import connect
+    from mysql.connector import connect  # type: ignore
 
     def connect_url(url):
         parts = urlparse(url)
