@@ -61,10 +61,9 @@ class LockHeldException(Exception):
     @property
     def principal(self) -> Optional[str]:
         "The principal that holds the lease, or None"
-        try:
+        if self.lease:
             return self.lease.principal
-        except AttributeError:
-            return None
+        return None
 
 
 class LockExpiredException(Exception):
