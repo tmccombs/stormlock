@@ -12,8 +12,11 @@ python = "^3.8"
 etcd3 = { version = "^0.12.0", optional = true }
 redis = { version = "^4.5.3", optional = true }
 boto3 = { version = "^1.26.100", optional = true }
-psycopg = { version = "^3.1.8", optional = true }
+psycopg = {extras = ["c"], version = "^3.1.8", optional = true }
 mysql-connector-python = { version = "^8.0.21", optional = true }
+
+[tool.poetry.group.types.dependencies]
+types-redis = "^4.5.3"
 
 [tool.poetry.extras]
 etcd = ["etcd3"]
