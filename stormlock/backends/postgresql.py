@@ -88,7 +88,7 @@ class Postgresql(Backend):
                 (resource, lease_id),
             )
             row = cur.fetchone()
-            return row and row[0]
+            return bool(row) and row[0] > 0
 
     def close(self):
         self._conn.close()
