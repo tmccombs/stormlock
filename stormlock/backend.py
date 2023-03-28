@@ -56,6 +56,13 @@ class LockHeldException(Exception):
         self.resource = resource
         self.lease = lease
 
+    @property
+    def principal(self):
+        try:
+            return self.lease.principal
+        except AttributeError:
+            return None
+
 
 class LockExpiredException(Exception):
     """

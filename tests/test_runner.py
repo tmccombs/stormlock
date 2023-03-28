@@ -20,7 +20,7 @@ def fail_lock():
         assert False, "successfully got contested lock"
     except LockHeldException as e:
         print(
-            f"Lock for {e.resource} already held by " f"{e.principal} with {e.lease_id}"
+            f"Lock for {e.resource} already held by " f"{e.principal} with {e.lease.id}"
         )
 
 
