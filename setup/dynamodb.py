@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from typing import Optional, Any
+from typing import Optional, Any, Dict
 
 import boto3  # type: ignore
 
@@ -28,7 +28,7 @@ def create_lock_table(
     )
     client = session.client("dynamodb", endpoint_url=endpoint)
 
-    config_args: dict[str, Any] = {}
+    config_args: Dict[str, Any] = {}
     if billing_mode != "PAY_PER_REQUEST":
         config_args["ProvisionedThroughput"] = {
             "ReadCapacityUnits": read_capacity,
