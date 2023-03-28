@@ -3,9 +3,9 @@ from datetime import timedelta
 from typing import Optional
 from uuid import uuid4
 
-import psycopg2  # type: ignore
-
-from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldException
+import psycopg  # type: ignore
+from stormlock.backend import (Backend, Lease, LockExpiredException,
+                               LockHeldException)
 
 
 class Postgresql(Backend):
@@ -13,14 +13,13 @@ class Postgresql(Backend):
 
     def __init__(self, connection: str, table: str = "stormlock"):
         super().__init__()
-        self._conn = psycopg2.connect(connection)
+        self._conn = psycopg.connect(connection)
         self._conn.autocommit = True
         self._table = table
 
     def lock(self, resource: str, principal: str, ttl: timedelta):
         lease_id = str(uuid4())
-        cur = self._conn.cursor()
-        try:
+        with self._conn.cursor() as cur:
             cur.execute(
                 f"""
                 INSERT INTO {self._table} as t
@@ -43,24 +42,18 @@ class Postgresql(Backend):
             if cur.rowcount == 1:
                 return str(lease_id)
             raise LockHeldException(resource, self.current(resource))
-        finally:
-            cur.close()
 
     def unlock(self, resource: str, lease_id: str):
-        cur = self._conn.cursor()
-        try:
+        with self._conn.cursor() as cur:
             cur.execute(
                 f"""
                 DELETE FROM {self._table} WHERE resource = %s AND lease = %s
                 """,
                 (resource, lease_id),
             )
-        finally:
-            cur.close()
 
     def renew(self, resource: str, lease_id: str, ttl: timedelta):
-        cur = self._conn.cursor()
-        try:
+        with self._conn.cursor() as cur:
             cur.execute(
                 f"""
                 UPDATE {self._table} SET expires = current_timestamp + %s
@@ -71,12 +64,9 @@ class Postgresql(Backend):
             )
             if cur.rowcount < 1:
                 raise LockExpiredException(resource)
-        finally:
-            cur.close()
 
     def current(self, resource: str) -> Optional[Lease]:
-        cur = self._conn.cursor()
-        try:
+        with self._conn.cursor() as cur:
             cur.execute(
                 f"""
                 SELECT principal, created, lease FROM {self._table}
@@ -84,13 +74,13 @@ class Postgresql(Backend):
                 (resource,),
             )
             row = cur.fetchone()
-            return row and Lease(*row)
-        finally:
-            cur.close()
+            if row:
+                principal, created, id = row
+                return Lease(principal, created, str(id))
+            return None
 
     def is_current(self, resource: str, lease_id: str) -> bool:
-        cur = self._conn.cursor()
-        try:
+        with self._conn.cursor() as cur:
             cur.execute(
                 f"""
                 SELECT count(lease) FROM {self._table}
@@ -99,5 +89,6 @@ class Postgresql(Backend):
                 (resource, lease_id),
             )
             return cur.fetchone()[0]
-        finally:
-            cur.close()
+
+    def close(self):
+        self._conn.close()

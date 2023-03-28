@@ -181,6 +181,17 @@ class Backend(ABC):
             return curr.id == lease_id
         return False
 
+    def close(self):
+        "Close any open connection(s) for the backend"
+        # By default do nothing
+        pass
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
 
 def find_backend(name: str) -> Type[Backend]:
     "Find the Backend class associated with a name using package metadata."
