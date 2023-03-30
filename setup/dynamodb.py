@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from typing import Optional, Any, Dict
+from typing import Any, Dict, Optional
 
 import boto3  # type: ignore
 

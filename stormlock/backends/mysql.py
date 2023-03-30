@@ -5,6 +5,7 @@ from datetime import timedelta
 from typing import Optional
 
 from mysql.connector import connect  # type: ignore
+
 from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldException
 
 

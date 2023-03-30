@@ -43,7 +43,6 @@ stormlock = "stormlock.cli:run"
 multi_line_output = 3
 include_trailing_comma = true
 force_grid_wrap = 0
-user_parentheses = true
 line_length = 88
 
 [tool.pylint.messages_control]

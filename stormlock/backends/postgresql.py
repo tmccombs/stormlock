@@ -4,6 +4,7 @@ from typing import Optional
 from uuid import uuid4
 
 import psycopg
+
 from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldException
 
 
