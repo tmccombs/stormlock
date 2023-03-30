@@ -36,7 +36,7 @@ jobs:
           hub release create -m 'Release ${{ github.ref_name }}' \
             -a dist/stormlock-${{ env.VERSION }}-py3-none-any.whl \
             -a dist/stormlock-${{ env.VERSION }}-sdist.tar.gz \
-            ${{ contains(github.ref, '-') ? '--prerelease' : '' }} '${{ github.ref_name }}'
+            ${{ contains(github.ref, '-') && '--prerelease' }} '${{ github.ref_name }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
