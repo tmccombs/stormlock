@@ -150,16 +150,15 @@ def run():
 
     args = parser.parse_args()
 
-    lock = load_lock(args.resource, args.config)
-
-    cmd = args.cmd
-    if cmd == "acquire":
-        acquire(lock, args.ttl)
-    elif cmd == "release":
-        lock.release(args.lease_id)
-    elif cmd == "renew":
-        renew(lock, args.lease_id, args.ttl)
-    elif cmd == "current":
-        current(lock, args.format)
-    elif cmd == "is-held":
-        is_held(lock, args.lease_id)
+    with load_lock(args.resource, args.config) as lock:
+        cmd = args.cmd
+        if cmd == "acquire":
+            acquire(lock, args.ttl)
+        elif cmd == "release":
+            lock.release(args.lease_id)
+        elif cmd == "renew":
+            renew(lock, args.lease_id, args.ttl)
+        elif cmd == "current":
+            current(lock, args.format)
+        elif cmd == "is-held":
+            is_held(lock, args.lease_id)

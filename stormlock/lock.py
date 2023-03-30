@@ -130,6 +130,12 @@ class StormLock:
         """
         return self._backend.is_current(self._resource, lease_id)
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._backend.__exit__(self, exc_type, exc_value, traceback)
+
 
 _SEARCH_PATHS = [
     "./.stormlock.cfg",
