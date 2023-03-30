@@ -1,6 +1,6 @@
 name: Publish
 
-on: 
+on:
   push:
     tags: v*
 
@@ -8,51 +8,38 @@ jobs:
   pypi:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Extract version
         run: echo ::set-env name=VERSION::${GITHUB_REF#refs/*/v}
       - name: Poetry cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: poetry-${{ hashFiles('poetry.lock') }}-publish
           path: ~/.cache/pypoetry
           restore-keys: |
             poetry-${{ hashFiles('poetry.lock') }}-
             poetry-
-      - name: Publish
-        uses: abatilo/actions-poetry@v1.8.1
+      - uses: actions/setup-python@v4
         with:
-          python_version: 3.8.3
-          poetry_version: 1.0.10
-          args: publish --build -n
+          python-version: 3.10.10
+      - name: Publish
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry_version: 1.4.1
+      - name: Publish
+        run: poetry publish --build --no-interaction
         env:
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        run: |
+          hub release create -m 'Release ${{ github.ref_name }}' \
+            -a dist/stormlock-${{ env.VERSION }}-py3-none-any.whl \
+            -a dist/stormlock-${{ env.VERSION }}-sdist.tar.gz \
+            ${{ contains(github.ref, '-') ? '--prerelease' : '' }} '${{ github.ref_name }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: ${{ contains(github.ref, '-') }}
-      - name: Upload wheel
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/stormlock-${{ env.VERSION }}-py3-none-any.whl
-          asset_name: stormlock-${{ env.VERSION }}-py3-none-any.whl
-          asset_content_type: application/zip
-      - name: Upload sdist
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/stormlock-${{ env.VERSION }}.tar.gz
-          asset_name: stormlock-${{ env.VERSION }}-sdist.tar.gz
-          asset_content_type: application/gzip
-

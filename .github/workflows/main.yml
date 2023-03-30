@@ -6,9 +6,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Poetry cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: poetry-${{ hashFiles('poetry.lock') }}-lint
           path: ~/.cache/pypoetry
@@ -23,8 +23,7 @@ jobs:
           pip install poetry
           poetry install -E etcd -E redis -E dynamodb -E postgresql -E mysql
           poetry run pip install mypy pylint
-      # temparily use a commit that works for this
-      - uses: psf/black@fcf97961061982656a1384ecc1628e217a52a88c
+      - uses: psf/black@stable
       - name: Lint
         run: |
           poetry run mypy .
@@ -69,9 +68,9 @@ jobs:
           MYSQL_DATABASE: test
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Poetry cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.backend }}
           path: ~/.cache/pypoetry
