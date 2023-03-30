@@ -39,7 +39,3 @@ jobs:
             ${{ contains(github.ref, '-') && '--prerelease' }} '${{ github.ref_name }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: ${{ contains(github.ref, '-') }}
