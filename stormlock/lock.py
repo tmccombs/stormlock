@@ -134,7 +134,7 @@ class StormLock:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self._backend.__exit__(self, exc_type, exc_value, traceback)
+        self._backend.__exit__(exc_type, exc_value, traceback)
 
 
 _SEARCH_PATHS = [
