@@ -1,0 +1,7 @@
+#!/bin/bash
+
+PKI_DIR=~/pki
+
+podman run -p 2379:2379 --name etcd -v $PKI_DIR:/etc/pki quay.io/coreos/etcd \
+  /usr/local/bin/etcd --name etcd --cert-file /etc/pki/etcd.crt --key-file /etc/pki/etcd.key\
+  --advertise-client-urls https://127.0.0.1:2379 --listen-client-urls https://0.0.0.0:2379
