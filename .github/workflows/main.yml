@@ -41,8 +41,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # temporarily remove etcd, because the upstream package is broken
-        backend: [redis, dynamodb, postgresql, mysql]
+        backend: [redis, etcd, dynamodb, postgresql, mysql]
     services:
       etcd:
         image: quay.io/coreos/etcd:v3.4.10
