@@ -2,7 +2,7 @@
 import secrets
 from datetime import datetime, timedelta
 from time import time
-from typing import Any, Optional, Tuple
+from typing import Any, Optional, Tuple, Union
 
 import boto3  # type: ignore
 from boto3.dynamodb.conditions import Attr  # type: ignore
@@ -77,7 +77,7 @@ class DynamoDB(Backend):
         lease_id = secrets.token_bytes(16).hex()
         created = datetime.now()
         expires = created + ttl
-        item: dict[str, str | int] = {
+        item: dict[str, Union[str, int]] = {
             "resource": resource,
             "principal": principal,
             "created": int(created.timestamp()),
