@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Literal, Optional
 
 import boto3  # type: ignore
 
@@ -9,7 +9,7 @@ import boto3  # type: ignore
 def create_lock_table(
     table_name: str = "stormlock",
     endpoint: Optional[str] = None,
-    billing_mode: str = "PAY_PER_REQUEST",
+    billing_mode: Literal["PAY_PER_REQUEST", "PROVISIONED"] = "PAY_PER_REQUEST",
     read_capacity: Optional[int] = None,
     write_capacity: Optional[int] = None,
     sse: Optional[str] = None,

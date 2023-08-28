@@ -9,17 +9,20 @@ authors = ["Thayne McCombs <astrothayne@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-etcd3 = { version = "^0.12.0", optional = true }
 redis = { version = "^5.0.0", optional = true }
 boto3 = { version = "^1.26.100", optional = true }
 psycopg = {extras = ["c"], version = "^3.1.8", optional = true }
 mysql-connector-python = { version = "^8.0.21", optional = true }
+grpcio = { version = "^1.57", optional = true }
 
 [tool.poetry.group.lint.dependencies]
 pylint = "^2.17.1"
+"types-protobuf" = "^4.24"
+"grpc-stubs" = "^1.53"
+"boto3-stubs" = { version = "^1.26", extras = ["dynamodb"] }
 
 [tool.poetry.extras]
-etcd = ["etcd3"]
+etcd = ["grpcio"]
 redis = ["redis"]
 dynamodb = ["boto3"]
 postgresql = ["psycopg"]
@@ -43,6 +46,9 @@ line_length = 88
 
 [tool.pylint.messages_control]
 disable = "W0511"
+
+[tool.pylint.basic]
+good-names = ["kv", "f"]
 
 [tool.pylint.format]
 max-line-length = "88"

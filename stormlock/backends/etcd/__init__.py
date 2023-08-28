@@ -9,7 +9,9 @@ import grpc
 
 from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldException
 
+# pylint: disable=no-name-in-module
 from .proto.kv_pb2 import KeyValue
+# pylint: disable=no-name-in-module
 from .proto.rpc_pb2 import (
     AuthenticateRequest,
     Compare,
@@ -51,7 +53,8 @@ class _Keys:
 
     @property
     def start(self) -> bytes:
-        return self.prefix
+        "key to use as the beginnig of a range for all keys for the lease"
+        return self.prefix + b"/"
 
 
 def _parse_lease(keys: _Keys, kvs: Iterable[KeyValue]) -> Optional[Lease]:

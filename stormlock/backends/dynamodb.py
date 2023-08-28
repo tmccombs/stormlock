@@ -2,7 +2,7 @@
 import secrets
 from datetime import datetime, timedelta
 from time import time
-from typing import Dict, Optional, Tuple
+from typing import Any, Optional, Tuple
 
 import boto3  # type: ignore
 from boto3.dynamodb.conditions import Attr  # type: ignore
@@ -19,7 +19,7 @@ def _aws_session(config: dict) -> boto3.session.Session:
     )
 
 
-def _parse_tags(tags: str) -> Dict[str, str]:
+def _parse_tags(tags: str) -> dict[str, str]:
     taglist = tags.split(",")
 
     def tag_pair(tag: str) -> Tuple[str, str]:
@@ -29,6 +29,18 @@ def _parse_tags(tags: str) -> Dict[str, str]:
         return (res[0], res[1])
 
     return dict(tag_pair(tag) for tag in taglist)
+
+
+def _parse_lease(item: dict[str, Any]) -> Optional[Lease]:
+    try:
+        expires = int(item["expires"])
+        if expires <= time():
+            return None
+
+        created = datetime.fromtimestamp(int(item["created"]))
+        return Lease(str(item["principal"]), created, str(item["lease"]))
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f'Unexpected value for leas in DynamoDB: {item!r}') from exc
 
 
 MAX_RETRIES = 3
@@ -65,7 +77,7 @@ class DynamoDB(Backend):
         lease_id = secrets.token_bytes(16).hex()
         created = datetime.now()
         expires = created + ttl
-        item = {
+        item: dict[str, str | int] = {
             "resource": resource,
             "principal": principal,
             "created": int(created.timestamp()),
@@ -116,8 +128,5 @@ class DynamoDB(Backend):
             ProjectionExpression="principal,created,lease,expires",
         ).get("Item")
         if item:
-            if item["expires"] <= time():
-                return None
-            created = datetime.fromtimestamp(int(item["created"]))
-            return Lease(item["principal"], created, item["lease"])
+            return _parse_lease(item)
         return None
