@@ -28,6 +28,8 @@ jobs:
           poetry install --all-extras
           poetry run pip install mypy pylint
       - uses: psf/black@stable
+        with:
+          options: '--check --diff --exclude proto'
       - name: Lint
         run: |
           poetry run mypy .

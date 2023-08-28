@@ -40,7 +40,7 @@ def _parse_lease(item: dict[str, Any]) -> Optional[Lease]:
         created = datetime.fromtimestamp(int(item["created"]))
         return Lease(str(item["principal"]), created, str(item["lease"]))
     except (TypeError, ValueError) as exc:
-        raise ValueError(f'Unexpected value for leas in DynamoDB: {item!r}') from exc
+        raise ValueError(f"Unexpected value for leas in DynamoDB: {item!r}") from exc
 
 
 MAX_RETRIES = 3
