@@ -11,7 +11,6 @@ from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldExce
 
 # pylint: disable=no-name-in-module
 from .proto.kv_pb2 import KeyValue
-
 # pylint: disable=no-name-in-module
 from .proto.rpc_pb2 import (
     AuthenticateRequest,
@@ -148,6 +147,8 @@ class Etcd(Backend):
             # include the creds in the channel, we just store the creds,
             # and include them in each request
             self._creds = grpc.metadata_call_credentials(TokenMetadataPlugin(token))
+        else:
+            self._creds = None
 
         self._kv = KVStub(self._channel)
         self._lease = LeaseStub(self._channel)
@@ -161,8 +162,8 @@ class Etcd(Backend):
         keys = _Keys(self.prefix + resource)
         lease = self._lease.LeaseGrant(
             LeaseGrantRequest(TTL=int(ttl.total_seconds())), **self._args
-        )
-        token = format(lease.id, "x")
+        ).ID
+        token = format(lease, "x")
         created = time.time()
 
         txn = TxnRequest(
@@ -200,7 +201,7 @@ class Etcd(Backend):
         resp = self._kv.Txn(txn)
         if resp.succeeded:
             return token
-        range_resp = resp.response[0].response_range
+        range_resp = resp.responses[0].response_range
         held_lease = _parse_lease(keys, range_resp.kvs)
         assert held_lease, "Unable to find held lease after failing to acquire lease"
         raise LockHeldException(resource, held_lease)
