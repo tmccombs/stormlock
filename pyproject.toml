@@ -53,6 +53,10 @@ good-names = ["kv", "f"]
 [tool.pylint.format]
 max-line-length = "88"
 
+[tool.black]
+# exclude generated code
+extend-exclude = 'proto'
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
