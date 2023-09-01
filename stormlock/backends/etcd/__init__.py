@@ -11,7 +11,6 @@ from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldExce
 
 # pylint: disable=no-name-in-module
 from .proto.kv_pb2 import KeyValue
-
 # pylint: disable=no-name-in-module
 from .proto.rpc_pb2 import (
     AuthenticateRequest,
@@ -111,6 +110,8 @@ class Etcd(Backend):
 
     Note that renewing ignores the supplied ttl.
     """
+
+    _creds: Optional[grpc.CallCredentials]
 
     def __init__(
         self,
