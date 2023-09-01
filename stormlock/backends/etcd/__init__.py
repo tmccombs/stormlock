@@ -11,6 +11,7 @@ from stormlock.backend import Backend, Lease, LockExpiredException, LockHeldExce
 
 # pylint: disable=no-name-in-module
 from .proto.kv_pb2 import KeyValue
+
 # pylint: disable=no-name-in-module
 from .proto.rpc_pb2 import (
     AuthenticateRequest,
