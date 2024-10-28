@@ -10,9 +10,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Poetry cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: poetry-${{ hashFiles('poetry.lock') }}-lint
           path: ~/.cache/pypoetry
@@ -71,9 +71,9 @@ jobs:
           MYSQL_DATABASE: test
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Poetry cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.backend }}
           path: ~/.cache/pypoetry
