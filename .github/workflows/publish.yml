@@ -33,9 +33,10 @@ jobs:
       - name: Create Release
         id: create_release
         run: |
-          hub release create -m 'Release ${{ github.ref_name }}' \
-            -a dist/stormlock-${{ env.VERSION }}-py3-none-any.whl \
-            -a dist/stormlock-${{ env.VERSION }}.tar.gz \
-            ${{ contains(github.ref, '-') && '--prerelease' || '' }} '${{ github.ref_name }}'
+          gh release create --repo "$GITHUB_REPOSITORY" --title 'Release ${{ github.ref_name }}' \
+            --notes-from-tag \
+            ${{ contains(github.ref, '-') && '--prerelease' || '' }} '${{ github.ref_name }}' \
+            dist/stormlock-${{ env.VERSION }}-py3-none-any.whl \
+            dist/stormlock-${{ env.VERSION }}.tar.gz \
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
