@@ -14,7 +14,6 @@ class MySql(Backend):
     "Stormlock backend that uses mysql (or compatible) as a data store."
 
     def __init__(self, table: str = "stormlock", **settings):
-        super().__init__()
         self._conn = connect(**settings)
         self._table = table
 

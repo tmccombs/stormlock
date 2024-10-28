@@ -13,7 +13,6 @@ class Postgresql(Backend):
     "Stormlock backend that uses postgresql as a data store."
 
     def __init__(self, connection: str, table: str = "stormlock"):
-        super().__init__()
         self._conn = psycopg.connect(connection)
         self._conn.autocommit = True
         self._table = table

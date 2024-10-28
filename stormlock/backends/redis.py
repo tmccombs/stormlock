@@ -56,7 +56,6 @@ class Redis(Backend):
         url: str = "redis://localhost:6379",
         # TODO: SSL options
     ):
-        super().__init__()
         self._client = redis.Redis.from_url(
             url,
             max_connections=1,

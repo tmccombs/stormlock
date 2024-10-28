@@ -14,7 +14,7 @@ Functions:
 
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from importlib import metadata
+from importlib.metadata import entry_points
 from typing import NamedTuple, Optional, Type
 
 
@@ -137,6 +137,7 @@ class Backend(ABC):
             - `int` and `Optional[int]`
             - `bool`
         """
+        pass
 
     @abstractmethod
     def lock(
@@ -202,10 +203,9 @@ class Backend(ABC):
 
 def find_backend(name: str) -> Type[Backend]:
     "Find the Backend class associated with a name using package metadata."
-    backends = metadata.entry_points()["stormlock.backends"]
+    backends = entry_points(group="stormlock.backends", name=name)
     for backend in backends:
-        if backend.name == name:
-            return backend.load()
+        return backend.load()
     raise ValueError(f"Unable to find stormlock backend for {name}")
 
 

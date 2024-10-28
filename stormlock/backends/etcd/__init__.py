@@ -40,7 +40,6 @@ class _Keys:
     "key for the unique token for the lease"
 
     def __init__(self, key: str):
-        super().__init__()
         self.prefix = key.encode()
         self.token = self.prefix + b"/id"
         self.principal = self.prefix + b"/p"
@@ -128,7 +127,6 @@ class Etcd(Backend):
         user: Optional[str] = None,
         password: Optional[str] = None,
     ):
-        super().__init__()
 
         target = f"{host}:{port}"
         if ca_cert is not None:

@@ -60,7 +60,6 @@ class DynamoDB(Backend):
         access_key_id: Optional[str] = None,
         secret_access_key: Optional[str] = None,
     ):
-        super().__init__()
         session = boto3.session.Session(
             profile_name=profile,
             aws_access_key_id=access_key_id,

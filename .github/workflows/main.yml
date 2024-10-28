@@ -26,13 +26,12 @@ jobs:
         run: |
           pipx install poetry ruff
           poetry install --all-extras
-          poetry run pip install mypy pylint
+          poetry run pip install mypy
       - name: ruff
         run: ruff check --output-format=github .
-      - name: Lint
+      - name: MyPy
         run: |
           poetry run mypy .
-          poetry run pylint stormlock
   test:
     runs-on: ubuntu-latest
     container: python
