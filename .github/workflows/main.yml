@@ -21,20 +21,18 @@ jobs:
             poetry-
       - uses: actions/setup-python@v3
         with:
-          python-version: '3.9'
+          python-version: '3.12'
       - name: Install
         run: |
-          pip install poetry
+          pipx install poetry ruff
           poetry install --all-extras
           poetry run pip install mypy pylint
-      - uses: psf/black@stable
-        with:
-          options: '--check --diff --exclude proto'
+      - name: ruff
+        run: ruff check --output-format=github .
       - name: Lint
         run: |
           poetry run mypy .
           poetry run pylint stormlock
-          poetry run isort **/*.py -c
   test:
     runs-on: ubuntu-latest
     container: python

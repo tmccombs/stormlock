@@ -1,9 +1,10 @@
 "Etcd backend"
+
 import struct
 import time
 from collections.abc import Iterable
 from datetime import datetime, timedelta
-from typing import List, Optional, Tuple
+from typing import Optional
 
 import grpc
 

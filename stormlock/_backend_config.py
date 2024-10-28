@@ -1,4 +1,5 @@
 "Load a backend from configuration"
+
 import contextlib
 from configparser import ConfigParser
 from inspect import Parameter, Signature, signature
@@ -21,7 +22,7 @@ def _read_parameter(param: Parameter, cfg: ConfigParser, section: str):
             return be_conf[param.name]
         if annot in (int, Optional[int]):
             return cfg.getint(section, param.name)
-        if annot == bool:
+        if annot is bool:
             return cfg.getboolean(section, param.name)
         raise AssertionError(f"Unable to parse config for {annot}")
     return param.default

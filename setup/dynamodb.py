@@ -47,7 +47,7 @@ def create_lock_table(
         AttributeDefinitions=[{"AttributeName": "resource", "AttributeType": "S"}],
         BillingMode=billing_mode,
         Tags=[{"Key": k, "Value": v} for (k, v) in tags.items()],
-        **config_args
+        **config_args,
     )
     # client.get_waiter('table_exists').wait(TableName=table_name)
     client.update_time_to_live(
