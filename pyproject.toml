@@ -12,15 +12,14 @@ python = "^3.9"
 redis = { version = "^5.0.0", optional = true }
 boto3 = { version = "^1.26.100", optional = true }
 psycopg = {extras = ["c"], version = "^3.1.8", optional = true }
-mysql-connector-python = { version = ">=8.1.0,<10.0", optional = true }
-grpcio = { version = "^1.57", optional = true }
-protobuf = { version = "^4.21", optional = true }
+mysql-connector-python = { version = "^9.1.0", optional = true }
+grpcio = { version = "^1.67", optional = true }
+protobuf = { version = "^5.28", optional = true }
 
 [tool.poetry.group.lint.dependencies]
-"types-protobuf" = "^4.24"
+"types-protobuf" = "^5.28"
 "grpc-stubs" = "^1.53"
 "boto3-stubs" = { version = "^1.26", extras = ["dynamodb"] }
-types-redis = "^4.6.0.20241004"
 
 [tool.poetry.extras]
 etcd = ["grpcio", "protobuf"]
