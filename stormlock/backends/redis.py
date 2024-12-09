@@ -4,7 +4,7 @@ import secrets
 import time
 from datetime import datetime, timedelta
 from functools import cached_property
-from typing import Optional
+from typing import Optional, cast
 
 import redis
 
@@ -98,7 +98,9 @@ class Redis(Backend):
             raise LockExpiredException(resource)
 
     def current(self, resource: str) -> Optional[Lease]:
-        data = self._client.hmget(resource, "id", "p", "c")
+        # We only use the sync client, so hmget should always returna  list, not an
+        # Awaitable
+        data = cast(list, self._client.hmget(resource, ["id", "p", "c"]))
         if data[0]:
             return _parse_lock(data)
         return None
