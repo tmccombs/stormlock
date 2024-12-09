@@ -11,27 +11,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Poetry cache
-        uses: actions/cache@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
         with:
-          key: poetry-${{ hashFiles('poetry.lock') }}-lint
-          path: ~/.cache/pypoetry
-          restore-keys: |
-            poetry-${{ hashFiles('poetry.lock') }}-
-            poetry-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
+          enable-cache: true
       - name: Install
-        run: |
-          pipx install poetry ruff
-          poetry install --all-extras
-          poetry run pip install mypy
-      - name: ruff
-        run: ruff check --output-format=github .
+        run: uv sync --all-extras --dev
+      - name: ruff lint
+        run: uvx ruff check --output-format=github .
+      - name: format
+        run: uvx ruff format --diff
       - name: MyPy
         run: |
-          poetry run mypy .
+          uvx mypy .
   test:
     runs-on: ubuntu-latest
     container: python
@@ -67,33 +59,33 @@ jobs:
       mysql:
         image: mysql
         env:
-          MYSQL_ROOT_PASSWORD: test
+          MYSQL_ROOT_PASSWORD: rootpass
+          MYSQL_USER: test
+          MYSQL_PASSWORD: test
           MYSQL_DATABASE: test
+        options: >-
+          --health-cmd mysqladmin ping -h localhost
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
-      - name: Poetry cache
-        uses: actions/cache@v4
+      - uses: astral-sh/setup-uv@v4
         with:
-          key: poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.backend }}
-          path: ~/.cache/pypoetry
-          restore-keys: |
-            poetry-${{ hashFiles('poetry.lock') }}-
-            poetry-
+          enable-cache: true
       - name: Install
-        run: |
-          pip install poetry
-          poetry install -E ${{ matrix.backend }}
+        run: uv sync --extra ${{ matrix.backend }}
       - name: Setup dynamodb
         if: matrix.backend == 'dynamodb'
-        run: poetry run python setup/dynamodb.py ci
+        run: uv run setup/dynamodb.py ci
       - name: Setup postgresql
         if: matrix.backend == 'postgresql'
-        run: poetry run python setup/sql.py postgresql://test@postgresql
+        run: uv run setup/sql.py postgresql://test@postgresql
       - name: Setup mysql
         if: matrix.backend == 'mysql'
-        run: poetry run python setup/sql.py mysql://root:test@mysql/test
+        run: uv run setup/sql.py mysql://test:test@mysql/test
       - name: Test CLI
-        run: poetry run tests/test_cli.sh
+        run: uv run tests/test_cli.sh
         env:
           STORMLOCK_CONFIG: tests/ci/${{ matrix.backend }}.cfg

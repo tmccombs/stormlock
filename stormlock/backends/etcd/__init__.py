@@ -127,7 +127,6 @@ class Etcd(Backend):
         user: Optional[str] = None,
         password: Optional[str] = None,
     ):
-
         target = f"{host}:{port}"
         if ca_cert is not None:
             chan_creds = _get_chan_creds(ca_cert, cert_key, cert_cert)

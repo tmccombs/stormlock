@@ -1,42 +1,61 @@
-[tool.poetry]
+[project]
 name = "stormlock"
 version = "0.4.1"
+requires-python = ">=3.9"
 description = "Simple distributed lock with support for multiple backends"
 readme = "README.rst"
-repository = "https://github.com/tmccombs/stormlock"
+license = { text = "Apache-2.0"}
 keywords = ["lock", "cli"]
-authors = ["Thayne McCombs <astrothayne@gmail.com>"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Topic :: System :: Distributed Computing",
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-redis = { version = "^5.0.0", optional = true }
-boto3 = { version = "^1.26.100", optional = true }
-psycopg = {extras = ["c"], version = "^3.1.8", optional = true }
-mysql-connector-python = { version = "^9.1.0", optional = true }
-grpcio = { version = "^1.67", optional = true }
-protobuf = { version = "^5.28", optional = true }
+[project.urls]
+Homepage = "https://github.com/tmccombs/stormlock"
+Repository = "https://github.com/tmccombs/stormlock"
 
-[tool.poetry.group.lint.dependencies]
-"types-protobuf" = "^5.28"
-"grpc-stubs" = "^1.53"
-"boto3-stubs" = { version = "^1.26", extras = ["dynamodb"] }
+[[project.authors]]
+name = "Thayne McCombs"
+email = "astrothayne@gmail.com"
 
-[tool.poetry.extras]
-etcd = ["grpcio", "protobuf"]
-redis = ["redis"]
-dynamodb = ["boto3"]
-postgresql = ["psycopg"]
-mysql = ["mysql-connector-python"]
+[[project.maintainers]]
+name = "Thayne McCombs"
+email = "astrothayne@gmail.com"
 
-[tool.poetry.plugins."stormlock.backends"]
+[project.optional-dependencies]
+etcd = ["grpcio~=1.67", "protobuf~=5.28"]
+redis = ["redis~=5.0"]
+dynamodb = ["boto3~=1.26"]
+postgresql = ["psycopg[c]~=3.1"]
+mysql = ["mysql-connector-python~=9.1"]
+
+
+[project.entry-points."stormlock.backends"]
 "etcd" = "stormlock.backends.etcd:Etcd [etcd]"
 "redis" = "stormlock.backends.redis:Redis [redis]"
 "dynamodb" = "stormlock.backends.dynamodb:DynamoDB [dynamodb]"
 "postgresql" = "stormlock.backends.postgresql:Postgresql [postgresql]"
 "mysql" = "stormlock.backends.mysql:MySql [mysql]"
 
-[tool.poetry.scripts]
+[project.scripts]
 stormlock = "stormlock.cli:run"
+
+[dependency-groups]
+dev = ["types-protobuf~=5.28", "grpc-stubs~=1.53", "boto3-stubs[dynamodb]~=1.26"]
+
+[tool.ruff]
+# exclude generated code
+extend-exclude = ['proto']
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_executable = "./.venv/bin/python"
+
 
 [tool.isort]
 multi_line_output = 3
@@ -58,12 +77,6 @@ max-line-length = "88"
 # exclude generated code
 extend-exclude = 'proto'
 
-[tool.ruff]
-# exclude generated code
-extend-exclude = ['proto']
-
 [build-system]
-requires = ["poetry>=1.8"]
-build-backend = "poetry.masonry.api"
-license = "Apache-2.0"
-
+requires = ["hatchling"]
+build-backend = "hatchling.build"
