@@ -17,7 +17,7 @@ class Postgresql(Backend):
         self._conn.autocommit = True
         self._table = table
 
-    def lock(self, resource: str, principal: str, ttl: timedelta):
+    def lock(self, resource: str, principal: str, ttl: timedelta) -> str:
         lease_id = str(uuid4())
         with self._conn.cursor() as cur:
             cur.execute(
@@ -43,7 +43,7 @@ class Postgresql(Backend):
                 return str(lease_id)
             raise LockHeldException(resource, self.current(resource))
 
-    def unlock(self, resource: str, lease_id: str):
+    def unlock(self, resource: str, lease_id: str) -> None:
         with self._conn.cursor() as cur:
             cur.execute(
                 f"""
@@ -52,7 +52,7 @@ class Postgresql(Backend):
                 (resource, lease_id),
             )
 
-    def renew(self, resource: str, lease_id: str, ttl: timedelta):
+    def renew(self, resource: str, lease_id: str, ttl: timedelta) -> None:
         with self._conn.cursor() as cur:
             cur.execute(
                 f"""
@@ -93,5 +93,5 @@ class Postgresql(Backend):
                 return row[0] > 0
             return False
 
-    def close(self):
+    def close(self) -> None:
         self._conn.close()

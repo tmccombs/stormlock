@@ -15,6 +15,7 @@ from configparser import ConfigParser
 from datetime import timedelta
 from getpass import getuser
 from socket import gethostname
+from types import TracebackType
 from typing import Optional
 
 from ._backend_config import backend_for_config
@@ -80,7 +81,7 @@ class StormLock:
         """
         return self._backend.lock(self._resource, self._principal, ttl or self._ttl)
 
-    def release(self, lease_id: str):
+    def release(self, lease_id: str) -> None:
         """
         Release a lease on the resource.
 
@@ -94,7 +95,7 @@ class StormLock:
         """
         self._backend.unlock(self._resource, lease_id)
 
-    def renew(self, lease_id: str, ttl: Optional[timedelta] = None):
+    def renew(self, lease_id: str, ttl: Optional[timedelta] = None) -> None:
         """
         Attempt to renew a currently held lease.
 
@@ -134,7 +135,7 @@ class StormLock:
     def __enter__(self):
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type: Optional[type], exc_value: Optional[BaseException], traceback: Optional[TracebackType]) -> None:
         self._backend.__exit__(exc_type, exc_value, traceback)
 
 

@@ -13,7 +13,7 @@ from stormlock.lock import StormLock, load_lock, parse_ttl
 
 
 def _add_resource_command(
-    subparsers,
+    subparsers: argparse._SubParsersAction,
     cmd: str,
     *,
     takes_lease: bool = False,
@@ -32,7 +32,7 @@ def _add_resource_command(
     return parser
 
 
-def _build_parser():
+def _build_parser() -> argparse.ArgumentParser:
     "Create the argument parser"
     parser = argparse.ArgumentParser(prog="stormlock")
     parser.add_argument("-c", "--config", help="config file")
@@ -69,13 +69,13 @@ def _build_parser():
     return parser
 
 
-def print_lease(lease: Lease, fmt: str):
+def print_lease(lease: Lease, fmt: str) -> None:
     "Print the information for an active lease."
 
-    def timestamp():
+    def timestamp() -> str:
         return lease.created.isoformat(timespec="milliseconds")
 
-    def print_delimited(delim: str):
+    def print_delimited(delim: str) -> None:
         print(delim.join([lease.principal, timestamp(), lease.id]))
 
     if fmt == "id":
@@ -100,11 +100,11 @@ def print_lease(lease: Lease, fmt: str):
         print("{:{w}}{:{w}}{:{w}}".format(*fields, w=width))
 
 
-def _message(msg):
+def _message(msg: str) -> None:
     print(msg, file=sys.stderr)
 
 
-def acquire(lock: StormLock, ttl: Optional[timedelta]):
+def acquire(lock: StormLock, ttl: Optional[timedelta]) -> None:
     "attempt to acquire a lock"
     # TODO: add support for retries
     try:
@@ -119,7 +119,7 @@ def acquire(lock: StormLock, ttl: Optional[timedelta]):
         sys.exit(2)
 
 
-def renew(lock: StormLock, lease: str, ttl: Optional[timedelta]):
+def renew(lock: StormLock, lease: str, ttl: Optional[timedelta]) -> None:
     "attempt to renew a lock"
     try:
         lock.renew(lease, ttl)
@@ -128,7 +128,7 @@ def renew(lock: StormLock, lease: str, ttl: Optional[timedelta]):
         sys.exit(3)
 
 
-def current(lock: StormLock, fmt: str):
+def current(lock: StormLock, fmt: str) -> None:
     "get the currently held lock"
     lease = lock.current()
     if lease:
@@ -138,13 +138,13 @@ def current(lock: StormLock, fmt: str):
         sys.exit(1)
 
 
-def is_held(lock: StormLock, lease: str):
+def is_held(lock: StormLock, lease: str) -> None:
     "test if the lease is currently active"
     if not lock.is_current(lease):
         sys.exit(1)
 
 
-def run():
+def run() -> None:
     "run the CLI program"
     parser = _build_parser()
 

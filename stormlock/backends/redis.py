@@ -40,7 +40,7 @@ end
 """
 
 
-def _parse_lock(lock_data) -> Lease:
+def _parse_lock(lock_data: list) -> Lease:
     (lease_id, princ, created) = lock_data
     return Lease(princ.decode(), datetime.fromtimestamp(float(created)), lease_id.hex())
 
@@ -78,7 +78,7 @@ class Redis(Backend):
         resource: str,
         principal: str,
         ttl: timedelta,
-    ):
+    ) -> str:
         token = secrets.token_bytes(16)
         args = [token, principal, time.time(), int(ttl.total_seconds())]
         contending_lock = self._acquire(keys=[resource], args=args)
@@ -87,11 +87,11 @@ class Redis(Backend):
             raise LockHeldException(resource, lease)
         return token.hex()
 
-    def unlock(self, resource: str, lease_id: str):
+    def unlock(self, resource: str, lease_id: str) -> None:
         token = bytes.fromhex(lease_id)
         self._release(keys=[resource], args=[token])
 
-    def renew(self, resource: str, lease_id: str, ttl: timedelta):
+    def renew(self, resource: str, lease_id: str, ttl: timedelta) -> None:
         token = bytes.fromhex(lease_id)
         ttl_secs = int(ttl.total_seconds())
         if not self._renew(keys=[resource], args=[token, ttl_secs]):
@@ -105,6 +105,6 @@ class Redis(Backend):
             return _parse_lock(data)
         return None
 
-    def is_current(self, resource: str, lease_id: str):
+    def is_current(self, resource: str, lease_id: str) -> bool:
         token = bytes.fromhex(lease_id)
         return token == self._client.hget(resource, "id")

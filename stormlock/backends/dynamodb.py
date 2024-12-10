@@ -72,7 +72,7 @@ class DynamoDB(Backend):
         # pylint: disable=C0103
         self._ConditionFailedException = exceptions.ConditionalCheckFailedException
 
-    def lock(self, resource: str, principal: str, ttl: timedelta):
+    def lock(self, resource: str, principal: str, ttl: timedelta) -> str:
         # FIXME: use uuid?
         lease_id = secrets.token_bytes(16).hex()
         created = datetime.now()
@@ -94,7 +94,7 @@ class DynamoDB(Backend):
         except self._ConditionFailedException as exc:
             raise LockHeldException(resource, self.current(resource)) from exc
 
-    def unlock(self, resource: str, lease_id: str):
+    def unlock(self, resource: str, lease_id: str) -> None:
         try:
             self._table.delete_item(
                 Key={"resource": resource},
@@ -103,7 +103,7 @@ class DynamoDB(Backend):
         except self._ConditionFailedException:
             pass
 
-    def renew(self, resource: str, lease_id: str, ttl: timedelta):
+    def renew(self, resource: str, lease_id: str, ttl: timedelta) -> None:
         now = datetime.now()
 
         condition = Attr("lease").eq(lease_id) and Attr("expires").gt(

@@ -12,6 +12,7 @@ Functions:
     find_backend
 """
 
+import types
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from importlib.metadata import entry_points
@@ -155,7 +156,7 @@ class Backend(ABC):
         """
 
     @abstractmethod
-    def unlock(self, resource: str, lease_id: str):
+    def unlock(self, resource: str, lease_id: str) -> None:
         """
         Release a lock.
 
@@ -164,7 +165,7 @@ class Backend(ABC):
         """
 
     @abstractmethod
-    def renew(self, resource: str, lease_id: str, ttl: timedelta):
+    def renew(self, resource: str, lease_id: str, ttl: timedelta) -> None:
         """
         Attempt to renew the lease for a lock. This reset the expiration of the
         lease to the current time plus the ttl. Note that some backends
@@ -190,14 +191,14 @@ class Backend(ABC):
             return curr.id == lease_id
         return False
 
-    def close(self):
+    def close(self) -> None:
         "Close any open connection(s) for the backend"
         # By default do nothing
 
     def __enter__(self):
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, _exc_type: Optional[type], _exc_value: Optional[BaseException], traceback: Optional[types.TracebackType]):
         self.close()
 
 

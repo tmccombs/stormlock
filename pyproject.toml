@@ -50,12 +50,11 @@ dev = ["types-protobuf~=5.28", "grpc-stubs~=1.53", "boto3-stubs[dynamodb]~=1.26"
 extend-exclude = ['proto']
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "W"]
+select = ["E", "F", "I", "W", "ANN001", "ANN201"]
 ignore = ["E501"]
 
 [tool.mypy]
 python_executable = "./.venv/bin/python"
-
 
 [tool.isort]
 multi_line_output = 3

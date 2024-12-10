@@ -55,14 +55,14 @@ class MySql(Backend):
             self._conn.rollback()
             raise LockHeldException(resource, current)
 
-    def unlock(self, resource: str, lease_id: str):
+    def unlock(self, resource: str, lease_id: str) -> None:
         with self._transaction() as cur:
             cur.execute(
                 f"""DELETE FROM {self._table} WHERE resource=%s AND lease=%s""",
                 (resource, bytes.fromhex(lease_id)),
             )
 
-    def renew(self, resource: str, lease_id: str, ttl: timedelta):
+    def renew(self, resource: str, lease_id: str, ttl: timedelta) -> None:
         with self._transaction() as cur:
             cur.execute(
                 f"""UPDATE {self._table} SET

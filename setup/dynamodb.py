@@ -19,7 +19,7 @@ def create_lock_table(
     profile: Optional[str] = None,
     aws_access_key_id: Optional[str] = None,
     aws_secret_access_key: Optional[str] = None,
-):
+) -> None:
     session = boto3.session.Session(
         region_name=region,
         profile_name=profile,
@@ -56,7 +56,7 @@ def create_lock_table(
     )
 
 
-def test_setup(endpoint="http://localhost:8000"):
+def test_setup(endpoint: str="http://localhost:8000") -> None:
     create_lock_table(
         aws_access_key_id="test",
         aws_secret_access_key="test",

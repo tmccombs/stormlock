@@ -207,18 +207,18 @@ class Etcd(Backend):
         assert held_lease, "Unable to find held lease after failing to acquire lease"
         raise LockHeldException(resource, held_lease)
 
-    def unlock(self, resource: str, lease_id: str):
+    def unlock(self, resource: str, lease_id: str) -> None:
         # It's an etcd lease, so just release it
         self._lease.LeaseRevoke(LeaseRevokeRequest(ID=int(lease_id, 16)), **self._args)
 
-    def renew(self, resource: str, lease_id: str, ttl: timedelta):
+    def renew(self, resource: str, lease_id: str, ttl: timedelta) -> None:
         # Just send a single keep-alive over a stream
         req = LeaseKeepAliveRequest(ID=int(lease_id, 16))
         resp = next(self._lease.LeaseKeepAlive(iter([req]), **self._args))
         if resp.TTL <= 0:
             raise LockExpiredException(resource)
 
-    def current(self, resource: str):
+    def current(self, resource: str) -> Optional[Lease]:
         keys = _Keys(self.prefix + resource)
         data = self._kv.Range(
             RangeRequest(
