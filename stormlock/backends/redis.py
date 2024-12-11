@@ -4,7 +4,7 @@ import secrets
 import time
 from datetime import datetime, timedelta
 from functools import cached_property
-from typing import Optional
+from typing import Optional, cast
 
 import redis
 
@@ -40,7 +40,7 @@ end
 """
 
 
-def _parse_lock(lock_data) -> Lease:
+def _parse_lock(lock_data: list) -> Lease:
     (lease_id, princ, created) = lock_data
     return Lease(princ.decode(), datetime.fromtimestamp(float(created)), lease_id.hex())
 
@@ -78,7 +78,7 @@ class Redis(Backend):
         resource: str,
         principal: str,
         ttl: timedelta,
-    ):
+    ) -> str:
         token = secrets.token_bytes(16)
         args = [token, principal, time.time(), int(ttl.total_seconds())]
         contending_lock = self._acquire(keys=[resource], args=args)
@@ -87,22 +87,24 @@ class Redis(Backend):
             raise LockHeldException(resource, lease)
         return token.hex()
 
-    def unlock(self, resource: str, lease_id: str):
+    def unlock(self, resource: str, lease_id: str) -> None:
         token = bytes.fromhex(lease_id)
         self._release(keys=[resource], args=[token])
 
-    def renew(self, resource: str, lease_id: str, ttl: timedelta):
+    def renew(self, resource: str, lease_id: str, ttl: timedelta) -> None:
         token = bytes.fromhex(lease_id)
         ttl_secs = int(ttl.total_seconds())
         if not self._renew(keys=[resource], args=[token, ttl_secs]):
             raise LockExpiredException(resource)
 
     def current(self, resource: str) -> Optional[Lease]:
-        data = self._client.hmget(resource, "id", "p", "c")
+        # We only use the sync client, so hmget should always returna  list, not an
+        # Awaitable
+        data = cast(list, self._client.hmget(resource, ["id", "p", "c"]))
         if data[0]:
             return _parse_lock(data)
         return None
 
-    def is_current(self, resource: str, lease_id: str):
+    def is_current(self, resource: str, lease_id: str) -> bool:
         token = bytes.fromhex(lease_id)
         return token == self._client.hget(resource, "id")

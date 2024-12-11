@@ -35,7 +35,7 @@ echo "principle=$principle created=$timestamp id=$lease_id"
 
 stormlock acquire $resource1 && fail "able to acquire held lock" || true
 
-res2_id=$(stormlock acquire $resource2) 
+res2_id=$(stormlock acquire $resource2)
 [[ $? -eq 0 ]] || fail "unable to acquire lock on another resource"
 
 stormlock release $resource1 "$id1"
