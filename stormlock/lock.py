@@ -135,7 +135,12 @@ class StormLock:
     def __enter__(self):
         return self
 
-    def __exit__(self, exc_type: Optional[type], exc_value: Optional[BaseException], traceback: Optional[TracebackType]) -> None:
+    def __exit__(
+        self,
+        exc_type: Optional[type],
+        exc_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
         self._backend.__exit__(exc_type, exc_value, traceback)
 
 

@@ -56,7 +56,7 @@ def create_lock_table(
     )
 
 
-def test_setup(endpoint: str="http://localhost:8000") -> None:
+def test_setup(endpoint: str = "http://localhost:8000") -> None:
     create_lock_table(
         aws_access_key_id="test",
         aws_secret_access_key="test",

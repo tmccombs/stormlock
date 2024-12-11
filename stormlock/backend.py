@@ -198,7 +198,12 @@ class Backend(ABC):
     def __enter__(self):
         return self
 
-    def __exit__(self, _exc_type: Optional[type], _exc_value: Optional[BaseException], traceback: Optional[types.TracebackType]):
+    def __exit__(
+        self,
+        _exc_type: Optional[type],
+        _exc_value: Optional[BaseException],
+        traceback: Optional[types.TracebackType],
+    ):
         self.close()
 
 
