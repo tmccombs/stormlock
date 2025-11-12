@@ -1,4 +1,4 @@
-lint: flake8 black-chk pylint mypy
+lint: ruff-check fmt-chk mypy
 
 pylint:
   python -mpylint stormlock
@@ -9,11 +9,14 @@ mypy:
 flake8:
   flake8
 
-black-chk:
-  black --check .
+ruff-check:
+    ruff check
+
+fmt-chk:
+    ruff format --check
 
 fmt:
-  black .
+  ruff format
 
 isort:
     isort **/*.py

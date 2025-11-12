@@ -25,7 +25,7 @@ name = "Thayne McCombs"
 email = "astrothayne@gmail.com"
 
 [project.optional-dependencies]
-etcd = ["grpcio~=1.67", "protobuf~=5.28"]
+etcd = ["grpcio~=1.67", "protobuf~=6.33"]
 redis = ["redis~=5.0"]
 dynamodb = ["boto3~=1.26"]
 postgresql = ["psycopg[c]~=3.1"]

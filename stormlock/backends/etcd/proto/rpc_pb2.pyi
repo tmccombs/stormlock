@@ -3,12 +3,13 @@ from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from collections.abc import Iterable as _Iterable, Mapping as _Mapping
+from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class ResponseHeader(_message.Message):
-    __slots__ = ("cluster_id", "member_id", "revision", "raft_term")
+    __slots__ = ()
     CLUSTER_ID_FIELD_NUMBER: _ClassVar[int]
     MEMBER_ID_FIELD_NUMBER: _ClassVar[int]
     REVISION_FIELD_NUMBER: _ClassVar[int]
@@ -20,7 +21,7 @@ class ResponseHeader(_message.Message):
     def __init__(self, cluster_id: _Optional[int] = ..., member_id: _Optional[int] = ..., revision: _Optional[int] = ..., raft_term: _Optional[int] = ...) -> None: ...
 
 class RangeRequest(_message.Message):
-    __slots__ = ("key", "range_end", "limit", "revision", "sort_order", "sort_target", "serializable", "keys_only", "count_only", "min_mod_revision", "max_mod_revision", "min_create_revision", "max_create_revision")
+    __slots__ = ()
     class SortOrder(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
         __slots__ = ()
         NONE: _ClassVar[RangeRequest.SortOrder]
@@ -67,10 +68,10 @@ class RangeRequest(_message.Message):
     max_mod_revision: int
     min_create_revision: int
     max_create_revision: int
-    def __init__(self, key: _Optional[bytes] = ..., range_end: _Optional[bytes] = ..., limit: _Optional[int] = ..., revision: _Optional[int] = ..., sort_order: _Optional[_Union[RangeRequest.SortOrder, str]] = ..., sort_target: _Optional[_Union[RangeRequest.SortTarget, str]] = ..., serializable: bool = ..., keys_only: bool = ..., count_only: bool = ..., min_mod_revision: _Optional[int] = ..., max_mod_revision: _Optional[int] = ..., min_create_revision: _Optional[int] = ..., max_create_revision: _Optional[int] = ...) -> None: ...
+    def __init__(self, key: _Optional[bytes] = ..., range_end: _Optional[bytes] = ..., limit: _Optional[int] = ..., revision: _Optional[int] = ..., sort_order: _Optional[_Union[RangeRequest.SortOrder, str]] = ..., sort_target: _Optional[_Union[RangeRequest.SortTarget, str]] = ..., serializable: _Optional[bool] = ..., keys_only: _Optional[bool] = ..., count_only: _Optional[bool] = ..., min_mod_revision: _Optional[int] = ..., max_mod_revision: _Optional[int] = ..., min_create_revision: _Optional[int] = ..., max_create_revision: _Optional[int] = ...) -> None: ...
 
 class RangeResponse(_message.Message):
-    __slots__ = ("header", "kvs", "more", "count")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     KVS_FIELD_NUMBER: _ClassVar[int]
     MORE_FIELD_NUMBER: _ClassVar[int]
@@ -79,10 +80,10 @@ class RangeResponse(_message.Message):
     kvs: _containers.RepeatedCompositeFieldContainer[_kv_pb2.KeyValue]
     more: bool
     count: int
-    def __init__(self, header: _Optional[_Union[ResponseHeader, _Mapping]] = ..., kvs: _Optional[_Iterable[_Union[_kv_pb2.KeyValue, _Mapping]]] = ..., more: bool = ..., count: _Optional[int] = ...) -> None: ...
+    def __init__(self, header: _Optional[_Union[ResponseHeader, _Mapping]] = ..., kvs: _Optional[_Iterable[_Union[_kv_pb2.KeyValue, _Mapping]]] = ..., more: _Optional[bool] = ..., count: _Optional[int] = ...) -> None: ...
 
 class PutRequest(_message.Message):
-    __slots__ = ("key", "value", "lease", "prev_kv", "ignore_value", "ignore_lease")
+    __slots__ = ()
     KEY_FIELD_NUMBER: _ClassVar[int]
     VALUE_FIELD_NUMBER: _ClassVar[int]
     LEASE_FIELD_NUMBER: _ClassVar[int]
@@ -95,10 +96,10 @@ class PutRequest(_message.Message):
     prev_kv: bool
     ignore_value: bool
     ignore_lease: bool
-    def __init__(self, key: _Optional[bytes] = ..., value: _Optional[bytes] = ..., lease: _Optional[int] = ..., prev_kv: bool = ..., ignore_value: bool = ..., ignore_lease: bool = ...) -> None: ...
+    def __init__(self, key: _Optional[bytes] = ..., value: _Optional[bytes] = ..., lease: _Optional[int] = ..., prev_kv: _Optional[bool] = ..., ignore_value: _Optional[bool] = ..., ignore_lease: _Optional[bool] = ...) -> None: ...
 
 class PutResponse(_message.Message):
-    __slots__ = ("header", "prev_kv")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     PREV_KV_FIELD_NUMBER: _ClassVar[int]
     header: ResponseHeader
@@ -106,17 +107,17 @@ class PutResponse(_message.Message):
     def __init__(self, header: _Optional[_Union[ResponseHeader, _Mapping]] = ..., prev_kv: _Optional[_Union[_kv_pb2.KeyValue, _Mapping]] = ...) -> None: ...
 
 class DeleteRangeRequest(_message.Message):
-    __slots__ = ("key", "range_end", "prev_kv")
+    __slots__ = ()
     KEY_FIELD_NUMBER: _ClassVar[int]
     RANGE_END_FIELD_NUMBER: _ClassVar[int]
     PREV_KV_FIELD_NUMBER: _ClassVar[int]
     key: bytes
     range_end: bytes
     prev_kv: bool
-    def __init__(self, key: _Optional[bytes] = ..., range_end: _Optional[bytes] = ..., prev_kv: bool = ...) -> None: ...
+    def __init__(self, key: _Optional[bytes] = ..., range_end: _Optional[bytes] = ..., prev_kv: _Optional[bool] = ...) -> None: ...
 
 class DeleteRangeResponse(_message.Message):
-    __slots__ = ("header", "deleted", "prev_kvs")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     DELETED_FIELD_NUMBER: _ClassVar[int]
     PREV_KVS_FIELD_NUMBER: _ClassVar[int]
@@ -126,7 +127,7 @@ class DeleteRangeResponse(_message.Message):
     def __init__(self, header: _Optional[_Union[ResponseHeader, _Mapping]] = ..., deleted: _Optional[int] = ..., prev_kvs: _Optional[_Iterable[_Union[_kv_pb2.KeyValue, _Mapping]]] = ...) -> None: ...
 
 class RequestOp(_message.Message):
-    __slots__ = ("request_range", "request_put", "request_delete_range", "request_txn")
+    __slots__ = ()
     REQUEST_RANGE_FIELD_NUMBER: _ClassVar[int]
     REQUEST_PUT_FIELD_NUMBER: _ClassVar[int]
     REQUEST_DELETE_RANGE_FIELD_NUMBER: _ClassVar[int]
@@ -138,7 +139,7 @@ class RequestOp(_message.Message):
     def __init__(self, request_range: _Optional[_Union[RangeRequest, _Mapping]] = ..., request_put: _Optional[_Union[PutRequest, _Mapping]] = ..., request_delete_range: _Optional[_Union[DeleteRangeRequest, _Mapping]] = ..., request_txn: _Optional[_Union[TxnRequest, _Mapping]] = ...) -> None: ...
 
 class ResponseOp(_message.Message):
-    __slots__ = ("response_range", "response_put", "response_delete_range", "response_txn")
+    __slots__ = ()
     RESPONSE_RANGE_FIELD_NUMBER: _ClassVar[int]
     RESPONSE_PUT_FIELD_NUMBER: _ClassVar[int]
     RESPONSE_DELETE_RANGE_FIELD_NUMBER: _ClassVar[int]
@@ -150,7 +151,7 @@ class ResponseOp(_message.Message):
     def __init__(self, response_range: _Optional[_Union[RangeResponse, _Mapping]] = ..., response_put: _Optional[_Union[PutResponse, _Mapping]] = ..., response_delete_range: _Optional[_Union[DeleteRangeResponse, _Mapping]] = ..., response_txn: _Optional[_Union[TxnResponse, _Mapping]] = ...) -> None: ...
 
 class Compare(_message.Message):
-    __slots__ = ("result", "target", "key", "version", "create_revision", "mod_revision", "value", "lease", "range_end")
+    __slots__ = ()
     class CompareResult(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
         __slots__ = ()
         EQUAL: _ClassVar[Compare.CompareResult]
@@ -194,7 +195,7 @@ class Compare(_message.Message):
     def __init__(self, result: _Optional[_Union[Compare.CompareResult, str]] = ..., target: _Optional[_Union[Compare.CompareTarget, str]] = ..., key: _Optional[bytes] = ..., version: _Optional[int] = ..., create_revision: _Optional[int] = ..., mod_revision: _Optional[int] = ..., value: _Optional[bytes] = ..., lease: _Optional[int] = ..., range_end: _Optional[bytes] = ...) -> None: ...
 
 class TxnRequest(_message.Message):
-    __slots__ = ("compare", "success", "failure")
+    __slots__ = ()
     COMPARE_FIELD_NUMBER: _ClassVar[int]
     SUCCESS_FIELD_NUMBER: _ClassVar[int]
     FAILURE_FIELD_NUMBER: _ClassVar[int]
@@ -204,25 +205,25 @@ class TxnRequest(_message.Message):
     def __init__(self, compare: _Optional[_Iterable[_Union[Compare, _Mapping]]] = ..., success: _Optional[_Iterable[_Union[RequestOp, _Mapping]]] = ..., failure: _Optional[_Iterable[_Union[RequestOp, _Mapping]]] = ...) -> None: ...
 
 class TxnResponse(_message.Message):
-    __slots__ = ("header", "succeeded", "responses")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     SUCCEEDED_FIELD_NUMBER: _ClassVar[int]
     RESPONSES_FIELD_NUMBER: _ClassVar[int]
     header: ResponseHeader
     succeeded: bool
     responses: _containers.RepeatedCompositeFieldContainer[ResponseOp]
-    def __init__(self, header: _Optional[_Union[ResponseHeader, _Mapping]] = ..., succeeded: bool = ..., responses: _Optional[_Iterable[_Union[ResponseOp, _Mapping]]] = ...) -> None: ...
+    def __init__(self, header: _Optional[_Union[ResponseHeader, _Mapping]] = ..., succeeded: _Optional[bool] = ..., responses: _Optional[_Iterable[_Union[ResponseOp, _Mapping]]] = ...) -> None: ...
 
 class CompactionRequest(_message.Message):
-    __slots__ = ("revision", "physical")
+    __slots__ = ()
     REVISION_FIELD_NUMBER: _ClassVar[int]
     PHYSICAL_FIELD_NUMBER: _ClassVar[int]
     revision: int
     physical: bool
-    def __init__(self, revision: _Optional[int] = ..., physical: bool = ...) -> None: ...
+    def __init__(self, revision: _Optional[int] = ..., physical: _Optional[bool] = ...) -> None: ...
 
 class CompactionResponse(_message.Message):
-    __slots__ = ("header")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     header: ResponseHeader
     def __init__(self, header: _Optional[_Union[ResponseHeader, _Mapping]] = ...) -> None: ...
@@ -232,13 +233,13 @@ class HashRequest(_message.Message):
     def __init__(self) -> None: ...
 
 class HashKVRequest(_message.Message):
-    __slots__ = ("revision")
+    __slots__ = ()
     REVISION_FIELD_NUMBER: _ClassVar[int]
     revision: int
     def __init__(self, revision: _Optional[int] = ...) -> None: ...
 
 class HashKVResponse(_message.Message):
-    __slots__ = ("header", "hash", "compact_revision", "hash_revision")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     HASH_FIELD_NUMBER: _ClassVar[int]
     COMPACT_REVISION_FIELD_NUMBER: _ClassVar[int]
@@ -250,7 +251,7 @@ class HashKVResponse(_message.Message):
     def __init__(self, header: _Optional[_Union[ResponseHeader, _Mapping]] = ..., hash: _Optional[int] = ..., compact_revision: _Optional[int] = ..., hash_revision: _Optional[int] = ...) -> None: ...
 
 class HashResponse(_message.Message):
-    __slots__ = ("header", "hash")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     HASH_FIELD_NUMBER: _ClassVar[int]
     header: ResponseHeader
@@ -262,7 +263,7 @@ class SnapshotRequest(_message.Message):
     def __init__(self) -> None: ...
 
 class SnapshotResponse(_message.Message):
-    __slots__ = ("header", "remaining_bytes", "blob", "version")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     REMAINING_BYTES_FIELD_NUMBER: _ClassVar[int]
     BLOB_FIELD_NUMBER: _ClassVar[int]
@@ -274,7 +275,7 @@ class SnapshotResponse(_message.Message):
     def __init__(self, header: _Optional[_Union[ResponseHeader, _Mapping]] = ..., remaining_bytes: _Optional[int] = ..., blob: _Optional[bytes] = ..., version: _Optional[str] = ...) -> None: ...
 
 class LeaseGrantRequest(_message.Message):
-    __slots__ = ("TTL", "ID")
+    __slots__ = ()
     TTL_FIELD_NUMBER: _ClassVar[int]
     ID_FIELD_NUMBER: _ClassVar[int]
     TTL: int
@@ -282,7 +283,7 @@ class LeaseGrantRequest(_message.Message):
     def __init__(self, TTL: _Optional[int] = ..., ID: _Optional[int] = ...) -> None: ...
 
 class LeaseGrantResponse(_message.Message):
-    __slots__ = ("header", "ID", "TTL", "error")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     ID_FIELD_NUMBER: _ClassVar[int]
     TTL_FIELD_NUMBER: _ClassVar[int]
@@ -294,19 +295,19 @@ class LeaseGrantResponse(_message.Message):
     def __init__(self, header: _Optional[_Union[ResponseHeader, _Mapping]] = ..., ID: _Optional[int] = ..., TTL: _Optional[int] = ..., error: _Optional[str] = ...) -> None: ...
 
 class LeaseRevokeRequest(_message.Message):
-    __slots__ = ("ID")
+    __slots__ = ()
     ID_FIELD_NUMBER: _ClassVar[int]
     ID: int
     def __init__(self, ID: _Optional[int] = ...) -> None: ...
 
 class LeaseRevokeResponse(_message.Message):
-    __slots__ = ("header")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     header: ResponseHeader
     def __init__(self, header: _Optional[_Union[ResponseHeader, _Mapping]] = ...) -> None: ...
 
 class LeaseCheckpoint(_message.Message):
-    __slots__ = ("ID", "remaining_TTL")
+    __slots__ = ()
     ID_FIELD_NUMBER: _ClassVar[int]
     REMAINING_TTL_FIELD_NUMBER: _ClassVar[int]
     ID: int
@@ -314,25 +315,25 @@ class LeaseCheckpoint(_message.Message):
     def __init__(self, ID: _Optional[int] = ..., remaining_TTL: _Optional[int] = ...) -> None: ...
 
 class LeaseCheckpointRequest(_message.Message):
-    __slots__ = ("checkpoints")
+    __slots__ = ()
     CHECKPOINTS_FIELD_NUMBER: _ClassVar[int]
     checkpoints: _containers.RepeatedCompositeFieldContainer[LeaseCheckpoint]
     def __init__(self, checkpoints: _Optional[_Iterable[_Union[LeaseCheckpoint, _Mapping]]] = ...) -> None: ...
 
 class LeaseCheckpointResponse(_message.Message):
-    __slots__ = ("header")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     header: ResponseHeader
     def __init__(self, header: _Optional[_Union[ResponseHeader, _Mapping]] = ...) -> None: ...
 
 class LeaseKeepAliveRequest(_message.Message):
-    __slots__ = ("ID")
+    __slots__ = ()
     ID_FIELD_NUMBER: _ClassVar[int]
     ID: int
     def __init__(self, ID: _Optional[int] = ...) -> None: ...
 
 class LeaseKeepAliveResponse(_message.Message):
-    __slots__ = ("header", "ID", "TTL")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     ID_FIELD_NUMBER: _ClassVar[int]
     TTL_FIELD_NUMBER: _ClassVar[int]
@@ -342,15 +343,15 @@ class LeaseKeepAliveResponse(_message.Message):
     def __init__(self, header: _Optional[_Union[ResponseHeader, _Mapping]] = ..., ID: _Optional[int] = ..., TTL: _Optional[int] = ...) -> None: ...
 
 class LeaseTimeToLiveRequest(_message.Message):
-    __slots__ = ("ID", "keys")
+    __slots__ = ()
     ID_FIELD_NUMBER: _ClassVar[int]
     KEYS_FIELD_NUMBER: _ClassVar[int]
     ID: int
     keys: bool
-    def __init__(self, ID: _Optional[int] = ..., keys: bool = ...) -> None: ...
+    def __init__(self, ID: _Optional[int] = ..., keys: _Optional[bool] = ...) -> None: ...
 
 class LeaseTimeToLiveResponse(_message.Message):
-    __slots__ = ("header", "ID", "TTL", "grantedTTL", "keys")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     ID_FIELD_NUMBER: _ClassVar[int]
     TTL_FIELD_NUMBER: _ClassVar[int]
@@ -368,13 +369,13 @@ class LeaseLeasesRequest(_message.Message):
     def __init__(self) -> None: ...
 
 class LeaseStatus(_message.Message):
-    __slots__ = ("ID")
+    __slots__ = ()
     ID_FIELD_NUMBER: _ClassVar[int]
     ID: int
     def __init__(self, ID: _Optional[int] = ...) -> None: ...
 
 class LeaseLeasesResponse(_message.Message):
-    __slots__ = ("header", "leases")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     LEASES_FIELD_NUMBER: _ClassVar[int]
     header: ResponseHeader
@@ -382,7 +383,7 @@ class LeaseLeasesResponse(_message.Message):
     def __init__(self, header: _Optional[_Union[ResponseHeader, _Mapping]] = ..., leases: _Optional[_Iterable[_Union[LeaseStatus, _Mapping]]] = ...) -> None: ...
 
 class AuthenticateRequest(_message.Message):
-    __slots__ = ("name", "password")
+    __slots__ = ()
     NAME_FIELD_NUMBER: _ClassVar[int]
     PASSWORD_FIELD_NUMBER: _ClassVar[int]
     name: str
@@ -390,7 +391,7 @@ class AuthenticateRequest(_message.Message):
     def __init__(self, name: _Optional[str] = ..., password: _Optional[str] = ...) -> None: ...
 
 class AuthenticateResponse(_message.Message):
-    __slots__ = ("header", "token")
+    __slots__ = ()
     HEADER_FIELD_NUMBER: _ClassVar[int]
     TOKEN_FIELD_NUMBER: _ClassVar[int]
     header: ResponseHeader
